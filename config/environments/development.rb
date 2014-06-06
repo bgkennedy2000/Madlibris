@@ -37,4 +37,10 @@ Madlibris::Application.configure do
 
   #per devise
   config.action_mailer.default_url_options = { host: 'localhost:3000' }
+
+  # per WDI week 5 notes
+  config.action_mailer.delivery_method = :letter_opener
+
+
+
 end

@@ -6,11 +6,20 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :username, :password, :password_confirmation, :remember_me, :uid, :provider
-  # attr_accessible :title, :body
-  
+
+  after_create :welcome_email
+
+  def welcome_email
+    if self.email
+      UserMailer.registration_confirmation(self).deliver
+    end
+  end  
+
+
   def email_required?
     false
   end
+
 
   def self.from_omniauth(auth)
     case auth.provider 
