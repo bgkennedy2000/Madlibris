@@ -73,8 +73,10 @@ Madlibris::Application.configure do
   config.action_mailer.smtp_settings = {
     :address   => "smtp.mandrillapp.com",
     :port      => 25,
-    :user_name => "MANDRILL_USERNAME",
-    :password  => "MANDRILL_API_KEY"
+    :user_name => ENV["MANDRILL_USERNAME"],
+    :password  => ENV["MANDRILL_API_KEY"],
+    :authentication => 'login', # Mandrill supports 'plain' or 'login'
+    :domain => 'madlibris.herokuapp.com', # your domain to identify your server when connec
   }
 
 
