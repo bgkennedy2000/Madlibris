@@ -1,6 +1,7 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    aasm (3.2.0)
     actionmailer (3.2.18)
       actionpack (= 3.2.18)
       mail (~> 2.5.4)
@@ -192,6 +193,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  aasm
   better_errors
   binding_of_caller
   coffee-rails (~> 3.2.1)
