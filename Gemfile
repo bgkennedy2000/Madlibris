@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'haml-rails'
 gem 'rails', '3.2.18'
 gem 'omniauth-facebook'
+gem 'aasm'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'

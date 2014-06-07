@@ -1,0 +1,3 @@
+class MadlibrisGame < Game
+  
+end

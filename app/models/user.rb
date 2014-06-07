@@ -6,8 +6,15 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :username, :password, :password_confirmation, :remember_me, :uid, :provider
-
+  has_and_belongs_to_many :games
+  validate :nickname_or_email?
   after_create :welcome_email
+
+  def nickname_or_email?
+    if self.email == "" && self.nickname == ""
+      errors.add(:base, "An email address or a twitter handle is required.") 
+    end
+  end
 
   def welcome_email
     if self.email
