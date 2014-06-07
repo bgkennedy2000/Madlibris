@@ -2,6 +2,7 @@ class Game < ActiveRecord::Base
   attr_accessible  :type, :kind, :state
   has_and_belongs_to_many :users, uniq: true
   has_many :rounds
+  has_many :madlibris_plays
   # validates :state, inclusion: { in: ["proposed", "ongoing", "completed"]}
   validates :type, inclusion: { in: ["MadlibrisGame"] }
   validates :kind, inclusion: { in: ["single-player", "multi-player"] }

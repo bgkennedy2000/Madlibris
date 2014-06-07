@@ -11,7 +11,25 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140607130156) do
+ActiveRecord::Schema.define(:version => 20140607201037) do
+
+  create_table "books", :force => true do |t|
+    t.string   "title"
+    t.string   "author"
+    t.string   "image_url"
+    t.string   "synopsis"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "first_lines", :force => true do |t|
+    t.string   "text"
+    t.integer  "book_id"
+    t.boolean  "true_line"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.integer  "user_id"
+  end
 
   create_table "games", :force => true do |t|
     t.string   "type"
@@ -24,6 +42,22 @@ ActiveRecord::Schema.define(:version => 20140607130156) do
   create_table "games_users", :force => true do |t|
     t.integer "game_id"
     t.integer "user_id"
+  end
+
+  create_table "line_choices", :force => true do |t|
+    t.integer  "first_line_id"
+    t.integer  "user_id"
+    t.integer  "round_id"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
+
+  create_table "rounds", :force => true do |t|
+    t.integer  "game_id"
+    t.string   "state"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.integer  "book_id"
   end
 
   create_table "users", :force => true do |t|
