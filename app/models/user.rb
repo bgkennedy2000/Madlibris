@@ -6,7 +6,7 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :username, :password, :password_confirmation, :remember_me, :uid, :provider
-  has_and_belongs_to_many :games
+  has_and_belongs_to_many :games, uniq: true
   validate :nickname_or_email?
   after_create :welcome_email
 
