@@ -54,6 +54,13 @@ GEM
       railties (>= 3.2.6, < 5)
       thread_safe (~> 0.1)
       warden (~> 1.2.3)
+    enumerabler (1.0.0)
+    epub-parser (0.1.6)
+      addressable (>= 2.3.5)
+      enumerabler
+      nokogiri (~> 1.6)
+      zipruby
+    epub_validator (1.1.0)
     equalizer (0.0.9)
     erubis (2.7.0)
     execjs (2.1.0)
@@ -71,6 +78,9 @@ GEM
     http (0.6.1)
       http_parser.rb (~> 0.6.0)
     http_parser.rb (0.6.0)
+    httparty (0.11.0)
+      multi_json (~> 1.0)
+      multi_xml (>= 0.5.2)
     i18n (0.6.9)
     journey (1.0.4)
     jquery-rails (3.1.0)
@@ -89,10 +99,13 @@ GEM
       thread_safe (~> 0.3, >= 0.3.1)
     method_source (0.8.2)
     mime-types (1.25.1)
+    mini_portile (0.6.0)
     multi_json (1.10.1)
     multi_xml (0.5.5)
     multipart-post (2.0.0)
     naught (1.0.0)
+    nokogiri (1.6.2.1)
+      mini_portile (= 0.6.0)
     oauth (0.4.7)
     oauth2 (0.9.4)
       faraday (>= 0.8, < 0.10)
@@ -188,6 +201,7 @@ GEM
       json (>= 1.8.0)
     warden (1.2.3)
       rack (>= 1.0)
+    zipruby (0.3.6)
 
 PLATFORMS
   ruby
@@ -198,9 +212,13 @@ DEPENDENCIES
   binding_of_caller
   coffee-rails (~> 3.2.1)
   devise
+  epub-parser
+  epub_validator
   haml-rails
+  httparty (= 0.11.0)
   jquery-rails
   letter_opener
+  nokogiri
   omniauth
   omniauth-facebook
   omniauth-twitter

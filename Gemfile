@@ -4,6 +4,10 @@ gem 'haml-rails'
 gem 'rails', '3.2.18'
 gem 'omniauth-facebook'
 gem 'aasm'
+gem 'nokogiri'
+gem 'epub-parser'
+gem 'httparty', '0.11.0'
+gem 'epub_validator'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
