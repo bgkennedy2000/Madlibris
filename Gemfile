@@ -8,6 +8,7 @@ gem 'nokogiri'
 gem 'epub-parser'
 gem 'httparty', '0.11.0'
 gem 'epub_validator'
+gem 'stanford-core-nlp'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
