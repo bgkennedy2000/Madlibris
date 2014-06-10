@@ -8,7 +8,14 @@ class LineChoice < ActiveRecord::Base
   belongs_to :first_line
   belongs_to :user
   belongs_to :round
-  belongs_to :game, through: :round
-  belongs_to :book, through: :first_line
+  
+  def game
+    round.try(:game)
+  end
+
+  
+  def book
+    first_line.try(:book)
+  end
 
 end

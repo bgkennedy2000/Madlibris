@@ -1,8 +1,13 @@
+require 'active_record/validations'
+
 class EpubReader
-  attr_reader :file, :book, :xhtml_xml_resources
-  attr_accessor :xml_document, :text_array, :chapter_node, :node_array
+
+  attr_reader :file, :book, :xhtml_xml_resources, :title
+  attr_accessor :xml_document, :text_array, :chapter_node, :node_array, :errors
 
   def initialize(file)
+    # to allow validation with active record validations
+
     @file = file
     @book = EPUB::Parser.parse(file)
     @xhtml_xml_resources = @book.resources.select { |resource| resource.media_type.include?("xhtml+xml") }
@@ -16,12 +21,14 @@ class EpubReader
     # These attributes are set at initialization via set_text_and_node_values
     @text_array = [ ]
     @node_array = [ ]
-    set_text_and_node_values
-  end
 
-  def set_text_and_node_values
     search_for_chapter_heading
+    raise "unable to identify chapter starting point" unless @chapter_node
+
     populate_text_and_node_arrays
+
+    @title = book.metadata.title
+    @authors = book.metadata.creators.map { |creator| creator.content }.join(",")
   end
 
   def search_for_chapter_heading
@@ -32,7 +39,6 @@ class EpubReader
       @chapter_node = set_chapter_node_with_chapter_text("h" + i.to_s)
       i += 1
     end
-    raise "no chapter start point identified" if @chapter_node.nil?
   end
 
   def populate_text_and_node_arrays

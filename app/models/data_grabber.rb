@@ -1,10 +1,10 @@
 class DataGrabber
   attr_accessor :source
   attr_reader :gutenberg_path, :gutenberg_source_file
-  # validates :source, :inclusion => {:in => ["gutenberg"]}
+  validates :source, :inclusion => {:in => ["gutenberg, google_books"]}
 
-  def initialize 
-    # @source = source
+  def initialize(source) 
+    @source = source
     @gutenberg_path = "public/gutenberg/"
     @gutenberg_source_file = @gutenberg_path + "epub_links.txt"
   end
@@ -57,6 +57,7 @@ class DataGrabber
     File.open(@gutenberg_path + "error_log", "w") { |file| file.write url + " is next to be fetched" }
     url
   end
+
 
 
 end
