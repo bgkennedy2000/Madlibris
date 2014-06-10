@@ -8,7 +8,7 @@ class EpubReader
     @xhtml_xml_resources = @book.resources.select { |resource| resource.media_type.include?("xhtml+xml") }
     
     # proc items are invoked in the search for the staring point node
-    @search_items = ['CHAPTER', 'BOOK ONE']
+    @search_items = ['CHAPTER', 'BOOK ONE', 'FIRST BOOK']
     @search_for_node = Proc.new { |element, search_term|
       @xml_document.css(element).find { |node| node.text.include?(search_term) }
     }
@@ -32,6 +32,7 @@ class EpubReader
       @chapter_node = set_chapter_node_with_chapter_text("h" + i.to_s)
       i += 1
     end
+    raise "no chapter start point identified" if @chapter_node.nil?
   end
 
   def populate_text_and_node_arrays
