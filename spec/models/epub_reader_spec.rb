@@ -37,9 +37,14 @@ describe EpubReader do
     expect(reader.text_array).to eq(correct_answer)
   end
 
-  it "Reads in pg19.epub and raises an error b/c it can't find the starting chapter" do
+  it "Reads in pg19.epub and sets reader.valid to false b/c it can't find the starting chapter" do
+    reader = EpubReader.new('public/gutenberg/pg19.epub')
+    expect(reader.valid).to eq(false)
+  end
 
-    expect{ EpubReader.new('public/gutenberg/pg19.epub') }.to raise_error
+  it "Reads in pg65.epub and sets reader.valid to false b/c its isn't a valid epub format" do
+    reader = EpubReader.new('public/gutenberg/pg65.epub')
+    expect(reader.valid).to eq(false)
   end
 
 end

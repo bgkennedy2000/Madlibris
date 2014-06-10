@@ -1,15 +1,14 @@
-require 'active_record/validations'
-
 class EpubReader
 
-  attr_reader :file, :book, :xhtml_xml_resources, :title
+  attr_reader :file, :book, :xhtml_xml_resources, :title, :valid, :authors
   attr_accessor :xml_document, :text_array, :chapter_node, :node_array, :errors
 
   def initialize(file)
-    # to allow validation with active record validations
 
     @file = file
     @book = EPUB::Parser.parse(file)
+    
+
     @xhtml_xml_resources = @book.resources.select { |resource| resource.media_type.include?("xhtml+xml") }
     
     # proc items are invoked in the search for the staring point node
@@ -23,12 +22,19 @@ class EpubReader
     @node_array = [ ]
 
     search_for_chapter_heading
-    raise "unable to identify chapter starting point" unless @chapter_node
+    
+    begin
+      @valid = true
+      raise "unable to identify chapter starting point" unless @chapter_node
+      # raise "invalid epub format" unless epub_is_valid?
 
-    populate_text_and_node_arrays
+      populate_text_and_node_arrays
 
-    @title = book.metadata.title
-    @authors = book.metadata.creators.map { |creator| creator.content }.join(",")
+      @title = book.metadata.title
+      @authors = book.metadata.creators.map { |creator| creator.content }
+    rescue
+      @valid = false
+    end
   end
 
   def search_for_chapter_heading
@@ -101,6 +107,11 @@ class EpubReader
     end
     node
   end
+
+  # def epub_is_valid?
+  #   epub = EpubValidator.check(@book)
+  #   epub.valid? 
+  # end
 
 
 

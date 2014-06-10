@@ -1,7 +1,7 @@
 class DataGrabber
   attr_accessor :source
   attr_reader :gutenberg_path, :gutenberg_source_file
-  validates :source, :inclusion => {:in => ["gutenberg, google_books"]}
+  # validate :source, :inclusion => {:in => ["gutenberg, google_books"]}
 
   def initialize(source) 
     @source = source

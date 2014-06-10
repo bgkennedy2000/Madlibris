@@ -9,6 +9,7 @@ gem 'epub-parser'
 gem 'httparty', '0.11.0'
 gem 'epub_validator'
 gem 'stanford-core-nlp'
+gem 'googlebooks'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
@@ -20,6 +21,14 @@ group :development, :test do
   gem 'binding_of_caller'
   gem 'better_errors'
   gem "letter_opener"
+  gem 'rspec-rails', '2.14.1'
+  gem 'factory_girl_rails'
+end
+
+group :test do
+  gem 'faker'
+  gem 'capybara'
+  gem 'guard-rspec'
 end
 
 gem 'devise'

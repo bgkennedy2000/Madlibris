@@ -11,19 +11,21 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140607201037) do
+ActiveRecord::Schema.define(:version => 20140610190716) do
 
   create_table "books", :force => true do |t|
     t.string   "title"
     t.string   "author"
-    t.string   "image_url"
-    t.string   "synopsis"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.text     "image_url"
+    t.text     "synopsis"
+    t.datetime "created_at",             :null => false
+    t.datetime "updated_at",             :null => false
+    t.text     "pre_first_line_content"
+    t.string   "source"
   end
 
   create_table "first_lines", :force => true do |t|
-    t.string   "text"
+    t.text     "text"
     t.integer  "book_id"
     t.boolean  "true_line"
     t.datetime "created_at", :null => false
