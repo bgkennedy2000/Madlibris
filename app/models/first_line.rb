@@ -4,8 +4,8 @@ class FirstLine < ActiveRecord::Base
   belongs_to :book
   belongs_to :user
   has_many :line_choices
+  belongs_to :introductory_contents
 
-  validates :book_id, presence: true
   validates :text, presence: true
   validates :true_line, :inclusion => {:in => [true, false]}
   validate :fake_line_has_user?

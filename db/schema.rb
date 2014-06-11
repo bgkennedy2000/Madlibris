@@ -11,11 +11,21 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140610190716) do
+ActiveRecord::Schema.define(:version => 20140611122936) do
+
+  create_table "authors", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
+  create_table "authors_books", :force => true do |t|
+    t.integer "author_id"
+    t.integer "book_id"
+  end
 
   create_table "books", :force => true do |t|
     t.string   "title"
-    t.string   "author"
     t.text     "image_url"
     t.text     "synopsis"
     t.datetime "created_at",             :null => false
@@ -28,9 +38,10 @@ ActiveRecord::Schema.define(:version => 20140610190716) do
     t.text     "text"
     t.integer  "book_id"
     t.boolean  "true_line"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
     t.integer  "user_id"
+    t.integer  "introductory_content_id"
   end
 
   create_table "games", :force => true do |t|
@@ -46,12 +57,26 @@ ActiveRecord::Schema.define(:version => 20140610190716) do
     t.integer "user_id"
   end
 
+  create_table "introductory_contents", :force => true do |t|
+    t.integer  "book_id"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "line_choices", :force => true do |t|
     t.integer  "first_line_id"
     t.integer  "user_id"
     t.integer  "round_id"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+  end
+
+  create_table "other_lines", :force => true do |t|
+    t.string   "kind"
+    t.text     "text"
+    t.datetime "created_at",              :null => false
+    t.datetime "updated_at",              :null => false
+    t.integer  "introductory_content_id"
   end
 
   create_table "rounds", :force => true do |t|

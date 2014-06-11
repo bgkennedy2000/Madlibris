@@ -58,6 +58,10 @@ class DataGrabber
     url
   end
 
+  def self.search_for_gutenberg_files(search_location, output_location)
+    `find #{search_location} -name '*.epub' >> #{output_location}/epub_list.txt`
+  end
+
 
 
 end
