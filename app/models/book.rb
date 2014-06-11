@@ -1,4 +1,5 @@
 class Book < ActiveRecord::Base
+  
   attr_accessible :image_url, :synopsis, :title, :source
 
   validates :synopsis, presence: true
@@ -53,16 +54,54 @@ class Book < ActiveRecord::Base
   end
 
   def self.match_epub_to_google_data(epub_reader, authors_array, descriptions_array, images_url_array)
-    binding.pry
-    if correct_index = epub_reader.authors.index(authors_array[0])
+    correct_index = self.find_index_of_authors_array(epub_reader, authors_array)
+    if correct_index
       [descriptions_array[correct_index], images_url_array[correct_index]]
     else
       false
     end
   end
 
+  def self.find_index_of_authors_array(epub_reader, authors_array)
+    array_of_last_names = epub_reader.authors.collect do
+      |author| 
+      name = Namae.parse(author) 
+      name[0].family 
+    end
+    authors_array.index do
+      |potential_authors|
+      potential_authors_array = potential_authors.split(",")
+      if potential_authors_array.length == epub_reader.authors.length
+        array_of_potential_author_last_names = potential_authors_array.collect do 
+          |author| 
+          name = Namae.parse(author) 
+          name[0].family
+        end
+        boolean = self.last_names_match?(array_of_last_names, array_of_potential_author_last_names)
+      else
+        false
+      end
+    end
+  end
+
+  def self.last_names_match?(array_of_last_names, array_of_potential_author_last_names)
+    length = array_of_last_names.length
+    truth_array = [ ]
+    i = 0
+    length.times do
+      truth_array << array_of_potential_author_last_names.include?(array_of_last_names[i])
+      i = i + 1
+    end
+    if truth_array.include?(false)
+      false
+    else
+      true
+    end
+  end
+
   def self.google_data_valid?(google_data)
-    if google_data == false || google_data == nil 
+    binding.pry
+    if google_data == false || google_data.include?(nil) 
       false
     elsif google_data[0].gsub(/\s+/, "") == "" || google_data[0].gsub(/\s+/, "") == nil || google_data[1].gsub(/\s+/, "") == "" || google_data[1].gsub(/\s+/, "") == nil
       false
@@ -82,27 +121,27 @@ class Book < ActiveRecord::Base
     end
   end
 
-  def self.destroy_models(models_array)
-    models_array.flatten.each { |model| model.destroy }
-  end
+  # def self.destroy_models(models_array)
+  #   models_array.flatten.each { |model| model.destroy }
+  # end
 
-  def self.models_saved?(model_array)
-    elements = model_array.length
-    truth_array = [ ]
-    i = 0
-    (elements - 1).times do 
-      if model_array[i].class == Array
-        model_array[i].each { |model| truth_array << model.save }
-      else
-        truth_array << model.save
-      end
-    end
-    if truth_array.flatten.include?(false)
-      false
-    else
-      true
-    end
-  end
+  # def self.models_saved?(model_array)
+  #   elements = model_array.length
+  #   truth_array = [ ]
+  #   i = 0
+  #   (elements - 1).times do 
+  #     if model_array[i].class == Array
+  #       model_array[i].each { |model| truth_array << model.save }
+  #     else
+  #       truth_array << model.save
+  #     end
+  #   end
+  #   if truth_array.flatten.include?(false)
+  #     false
+  #   else
+  #     true
+  #   end
+  # end
 
   def self.create_dependent_models(book, reader, google_data)
     authors = reader.authors.map { |author| book.authors.build(name: author) }
