@@ -16,17 +16,21 @@ class GamesUser < ActiveRecord::Base
       state :accepted
       state :rejected
 
-    # event :run do
-    #   transitions :from => :sleeping, :to => :running
-    # end
+    event :invite do
+      transitions :from => :to_do, :to => :pending, :guard => :invitation_sent?
+    end
 
-    # event :clean do
-    #   transitions :from => :running, :to => :cleaning
-    # end
+    event :accept do
+      transitions :from => :pending, :to => :accepted
+    end
 
     # event :sleep do
     #   transitions :from => :running, :to => :sleeping, :guard => :cleaning_needed?
     # end
+  end
+
+  def invitation_sent?
+
   end
 
 end

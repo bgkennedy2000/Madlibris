@@ -9,7 +9,6 @@ class Game < ActiveRecord::Base
   validates :kind, inclusion: { in: ["single-player", "multi-player"] }
   # validate :has_users?
   # validate :has_one_player?
-  include AASM
 
 # needs to accomodate game creation process, right now blows it up due to game state
   def has_one_player?
@@ -23,24 +22,6 @@ class Game < ActiveRecord::Base
     errors.add(:base, "A game must have at least one user") if self.users == [ ]
   end
 
-  aasm :column => 'state' do
-    state :proposing, :initial => true
-    state :playing
-    state :completing
-
-    # event :run do
-    #   transitions :from => :sleeping, :to => :running
-    # end
-
-    # event :clean do
-    #   transitions :from => :running, :to => :cleaning
-    # end
-
-    # event :sleep do
-    #   transitions :from => :running, :to => :sleeping, :guard => :cleaning_needed?
-    # end
-  end
-
-
+  
 
 end

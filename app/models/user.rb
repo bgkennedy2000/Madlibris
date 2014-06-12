@@ -32,12 +32,21 @@ class User < ActiveRecord::Base
   end
 
   def invite_new_user(email, game)
-    game_user = user.games_users.create(game_id: game.id, user_role: "invitee")
-    if game.save
-      [game, game_user]
-    else
-      false
-    end
+
+    #create after devise invitable implemented
+
+  end
+
+  def pending_invites
+    games_users.select { |games_user| games_user.try(:pending?) || games_user.try(:to_do?) }
+  end
+
+  def accept_invitation(game)
+    invite = pending_invites.select { |games_user| games_user.try(:game) == game }[0]
+  end
+
+  def reject_invitation(game)
+
   end
 
   def nickname_or_email?

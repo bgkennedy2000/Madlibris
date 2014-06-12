@@ -32,7 +32,7 @@ group :test do
   gem 'guard-rspec'
 end
 
-gem 'devise'
+gem 'devise', '>= 2.0.0'
 gem 'omniauth'
 gem 'omniauth-twitter'
 gem 'twitter'
