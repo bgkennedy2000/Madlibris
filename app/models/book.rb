@@ -42,7 +42,7 @@ class Book < ActiveRecord::Base
   end
 
   def self.populate_info_from_google(epub_reader)
-    books = GoogleBooks.search(epub_reader.title)
+    books = GoogleBooks.search(epub_reader.title, { count: 40 })
     if books.first
       authors_array = books.map { |book| book.authors }
       descriptions_array = books.map { |book| book.description }
@@ -54,28 +54,39 @@ class Book < ActiveRecord::Base
   end
 
   def self.match_epub_to_google_data(epub_reader, authors_array, descriptions_array, images_url_array)
-    correct_index = self.find_index_of_authors_array(epub_reader, authors_array)
-    if correct_index
-      [descriptions_array[correct_index], images_url_array[correct_index]]
+    correct_index_array = self.find_index_of_authors_array(epub_reader, authors_array)
+    if correct_index_array
+      self.correct_description_and_image(correct_index_array, descriptions_array, images_url_array)
     else
       false
     end
+  end
+
+  def self.correct_description_and_image(correct_index_array, descriptions_array, images_url_array)
+    tries = correct_index_array.length
+    description_and_image_array = [ ]
+    i = 0
+    until (description_and_image_array[0] && description_and_image_array[1]) || i == tries
+      description_and_image_array = [descriptions_array[correct_index_array[i]], images_url_array[correct_index_array[i]]]
+      i = i + 1
+    end
+    description_and_image_array
   end
 
   def self.find_index_of_authors_array(epub_reader, authors_array)
     array_of_last_names = epub_reader.authors.collect do
       |author| 
       name = Namae.parse(author) 
-      name[0].family 
+      name[0].family if name[0]
     end
-    authors_array.index do
-      |potential_authors|
-      potential_authors_array = potential_authors.split(",")
+    authors_array.each_index.select do
+      |i|
+      potential_authors_array = authors_array[i].split(",")
       if potential_authors_array.length == epub_reader.authors.length
         array_of_potential_author_last_names = potential_authors_array.collect do 
           |author| 
           name = Namae.parse(author) 
-          name[0].family
+          name[0].family if name[0]
         end
         boolean = self.last_names_match?(array_of_last_names, array_of_potential_author_last_names)
       else
@@ -101,7 +112,7 @@ class Book < ActiveRecord::Base
 
   def self.google_data_valid?(google_data)
     binding.pry
-    if google_data == false || google_data.include?(nil) 
+    if google_data == false || google_data.include?(nil) || google_data.empty? 
       false
     elsif google_data[0].gsub(/\s+/, "") == "" || google_data[0].gsub(/\s+/, "") == nil || google_data[1].gsub(/\s+/, "") == "" || google_data[1].gsub(/\s+/, "") == nil
       false

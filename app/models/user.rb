@@ -6,10 +6,39 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :username, :password, :password_confirmation, :remember_me, :uid, :provider
-  has_and_belongs_to_many :games, uniq: true
+  has_many :games_users
+  has_many :games, through: :games_users
   has_many :rounds, through: :games
   validate :nickname_or_email?
   after_create :welcome_email
+
+  def new_game(kind)
+    game = MadlibrisGame.create(kind: kind)
+    game_user = games_users.create(game_id: game.id, user_role: "host")
+    if game.save
+      [game, game_user]
+    else  
+      false
+    end
+  end
+
+  def invite_existing_user(user, game)
+    game_user = user.games_users.create(game_id: game.id, user_role: "invitee")
+    if game.save
+      [game, game_user]
+    else
+      false
+    end
+  end
+
+  def invite_new_user(email, game)
+    game_user = user.games_users.create(game_id: game.id, user_role: "invitee")
+    if game.save
+      [game, game_user]
+    else
+      false
+    end
+  end
 
   def nickname_or_email?
     if self.email == "" && self.nickname == ""
