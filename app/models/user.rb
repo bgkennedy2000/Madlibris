@@ -20,6 +20,9 @@ class User < ActiveRecord::Base
     game = MadlibrisGame.create(kind: kind)
     game_user = games_users.create(game_id: game.id, user_role: "host")
     if game.save
+      # invite themselves to the game to transition state
+      game_user.invite
+      game_user.accept
       [game, game_user]
     else  
       false
@@ -48,7 +51,7 @@ class User < ActiveRecord::Base
 
   def accept_invitation(game)
     game_user = pending_invites.select { |games_user| games_user.try(:game) == game }[0]
-    game_user.accept
+    game_user.try(:accept) 
     game_user
   end
 

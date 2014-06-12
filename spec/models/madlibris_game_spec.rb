@@ -7,16 +7,88 @@ describe MadlibrisGame do
     @user2 = create(:user)
     @user3 = create(:user)
     @user4 = create(:user)
+    @user5 = create(:user)
+    @user6 = create(:user)
 
-    @invalid_game = @user1.new_game('multi-player')
-    @user1.invite_existing_user(@user2, @invalid_game)
-    @user1.invite_existing_user(@user3, @invalid_game)
+    @game = @user1.new_game('multi-player')[0]
+    @user1.invite_existing_user(@user2, @game)
+    @user1.invite_existing_user(@user3, @game)
+    @user1.invite_existing_user(@user4, @game)
+    @user1.invite_existing_user(@user5, @game)
   end
 
   describe ".def ready_to_play?" do
     it "returns false if min of 3 people have not accepted an invitation" do
       
-      expect(@invalid_game.ready_to_play?).to eq false
+      expect(@game.ready_to_play?).to eq false
+    end
+
+    it "returns true if all outstanding invites have been accepted" do
+
+      @user2.accept_invitation(@game)
+      @user3.accept_invitation(@game)
+      @user4.accept_invitation(@game)
+      @user5.accept_invitation(@game)
+      expect(@game.playing?).to eq true
+    end
+
+    it "returns false if one outstanding invitee is pending" do
+
+      @user2.accept_invitation(@game)
+      @user3.accept_invitation(@game)
+      @user4.accept_invitation(@game)
+      expect(@game.playing?).to eq false
+    end
+
+    it "returns true if all invites have been accepted or rejected" do
+
+      @user2.accept_invitation(@game)
+      @user3.accept_invitation(@game)
+      @user4.accept_invitation(@game)
+      @user5.reject_invitation(@game)
+      expect(@game.playing?).to eq true
     end
   end
+
+  describe "enough_players?" do
+    it "returns true if more than three accepted players attached to a game and false otherwise" do
+
+      @user2.accept_invitation(@game)
+      binding.pry
+      expect(@game.enough_players?).to eq false
+
+      @user3.accept_invitation(@game)
+    
+      expect(@game.enough_players?).to eq true
+    end
+  end
+
+  describe "no_outstanding_invites?" do
+    it "returns true no invites left are pending or to do and false otherwise" do
+     
+      @user2.accept_invitation(@game)
+      @user3.reject_invitation(@game)
+      binding.pry
+
+      expect(@game.no_outstanding_invites?).to eq false
+
+      @user4.accept_invitation(@game)
+      @user5.reject_invitation(@game)
+
+      expect(@game.no_outstanding_invites?).to eq true
+    end
+
+  end
+
+  describe "no_invites_to_send?"    do
+    it "returns true if no game_users are todo and false otherwise" do
+    
+      todos = @game.games_users.select { |games_users| games_user.try(:to_do?) }
+      expect(todos).to eq []
+
+    end
+  end
+
+
+
 end
