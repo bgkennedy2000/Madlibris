@@ -6,10 +6,14 @@ class User < ActiveRecord::Base
 
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :username, :password, :password_confirmation, :remember_me, :uid, :provider
+  
   has_many :games_users
   has_many :games, through: :games_users
   has_many :rounds, through: :games
+  has_many :notifications
+
   validate :nickname_or_email?
+  
   after_create :welcome_email
 
   def new_game(kind)
