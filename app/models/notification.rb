@@ -1,8 +1,9 @@
 class Notification < ActiveRecord::Base
-  attr_accessible :checked, :subject, :user_id
-  validates :checked, presence: true
-  validates :subject, presence: true
+  attr_accessible :checked, :text, :user_id
+
+  validates :text, presence: true
   validates :user_id, presence: true
+  
   after_initialize :defaults
 
   belongs_to :user

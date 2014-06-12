@@ -15,6 +15,7 @@ describe User do
     @game = @userA.invite_existing_user(@userD, @game)[0]
     @game2 = @userE.new_game("multi-player")[0]
     @game2 = @userE.invite_existing_user(@userD, @game2)[0]
+
   end
   
   describe ".new_game" do
@@ -70,15 +71,45 @@ describe User do
       expect(@userB.games.include?(game)).to eq true
     end
 
+    it "results in the user receiving a notification to the user" do
+      expect(@userB.notifications.count).to eq 2
+      expect(@userD.notifications.count).to eq 2
+    end
+
   end
 
   describe "pending_invites" do
     it "returns all the pending games_users" do
-      expect(@userD.pending_invites).to eq @userD.games_users
+      expect(@userB.pending_invites.count).to eq 1
+      expect(@userD.pending_invites.count).to eq 2
     end
   end
 
-    
+  describe ".accept_invitation(game)" do
+    it "makes a game_user accept an invite" do
+      
+      @userF = create(:user)
+      @game_game_user1 = @userE.invite_existing_user(@userF, @game2)
+
+      game_user = @userF.accept_invitation(@game_game_user1[0])
+
+      expect(game_user.accepted?).to eq true
+
+    end
+  end
+
+  describe "reject_invitation" do
+    it "makes a game_user reject an invite" do
+
+      @userF = create(:user)
+      @game_game_user1 = @userE.invite_existing_user(@userF, @game2)
+
+      game_user = @userF.reject_invitation(@game_game_user1[0])
+
+      expect(game_user.rejected?).to eq true
+
+    end
+  end    
 
 
     

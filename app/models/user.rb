@@ -29,6 +29,7 @@ class User < ActiveRecord::Base
   def invite_existing_user(user, game)
     game_user = user.games_users.create(game_id: game.id, user_role: "invitee")
     if game.save
+      game_user.send_invite
       [game, game_user]
     else
       false
@@ -42,15 +43,19 @@ class User < ActiveRecord::Base
   end
 
   def pending_invites
-    games_users.select { |games_user| games_user.try(:pending?) || games_user.try(:to_do?) }
+    games_users.select { |games_user| games_user.try(:pending?) }
   end
 
   def accept_invitation(game)
-    invite = pending_invites.select { |games_user| games_user.try(:game) == game }[0]
+    game_user = pending_invites.select { |games_user| games_user.try(:game) == game }[0]
+    game_user.accept
+    game_user
   end
 
   def reject_invitation(game)
-
+    game_user = pending_invites.select { |games_user| games_user.try(:game) == game }[0]
+    game_user.reject
+    game_user
   end
 
   def nickname_or_email?

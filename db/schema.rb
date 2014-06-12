@@ -76,7 +76,7 @@ ActiveRecord::Schema.define(:version => 20140612181232) do
   end
 
   create_table "notifications", :force => true do |t|
-    t.string   "subject"
+    t.text     "text"
     t.integer  "user_id"
     t.boolean  "checked"
     t.datetime "created_at", :null => false

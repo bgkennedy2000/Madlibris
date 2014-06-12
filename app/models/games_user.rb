@@ -1,5 +1,6 @@
 class GamesUser < ActiveRecord::Base
   attr_accessible :game_id, :invitation_status, :user_id, :user_role
+
   belongs_to :game
   belongs_to :user
 
@@ -17,20 +18,24 @@ class GamesUser < ActiveRecord::Base
       state :rejected
 
     event :invite do
-      transitions :from => :to_do, :to => :pending, :guard => :invitation_sent?
+      transitions :from => :to_do, :to => :pending
     end
 
     event :accept do
       transitions :from => :pending, :to => :accepted
     end
 
-    # event :sleep do
-    #   transitions :from => :running, :to => :sleeping, :guard => :cleaning_needed?
-    # end
+    event :reject do
+      transitions :from => :pending, :to => :rejected
+    end
   end
 
-  def invitation_sent?
-
+  def send_invite
+    if user.notifications.create(text: "#{user.username} has challenged you to a game")
+      invite
+    end
   end
+
+
 
 end
