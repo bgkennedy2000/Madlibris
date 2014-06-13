@@ -28,6 +28,16 @@ class MadlibrisGame < Game
     games_users.select { |games_user| games_user.try(:to_do?) } == [ ]
   end
 
+  def build_round_models
+    first_round = self.rounds.create
+    book_choice = first_round.build_book_choice
+    [first_round, book_choice]
+  end
+
+  def host
+    game_users
+  end
+
 
 
 

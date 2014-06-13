@@ -12,6 +12,7 @@ class GamesUser < ActiveRecord::Base
 
   scope :pendings, -> { where("invitation_status = ?", "pending") }
   scope :accepteds, -> { where("invitation_status = ?", "accepted") }
+  scope :where_host, -> { where("user_role = ?", "host") }
 
   after_initialize :defaults
 

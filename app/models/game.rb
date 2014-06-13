@@ -3,7 +3,6 @@ class Game < ActiveRecord::Base
   has_many :games_users
   has_many :users, through: :games_users
   has_many :rounds
-  has_many :madlibris_plays
   # validates :state, inclusion: { in: ["proposed", "ongoing", "completed"]}
   validates :type, inclusion: { in: ["MadlibrisGame"] }
   validates :kind, inclusion: { in: ["single-player", "multi-player"] }
@@ -19,7 +18,7 @@ class Game < ActiveRecord::Base
 
     event :game_active do
       after do
-        self.rounds.build
+        self.build_round_models
         self.save
       end
       transitions :from => :proposing, :to => :playing
@@ -39,6 +38,7 @@ class Game < ActiveRecord::Base
   def has_users?
     errors.add(:base, "A game must have at least one user") if self.users == [ ]
   end
+
 
   
 

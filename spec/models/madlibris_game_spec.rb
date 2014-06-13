@@ -93,6 +93,49 @@ describe MadlibrisGame do
     end
   end
 
+  describe ".build_round_models" do
 
+    before(:each) do
+      @user1 = create(:user)
+      @user2 = create(:user)
+      @user3 = create(:user)
+      @user4 = create(:user)
+      @user5 = create(:user)
+      @user6 = create(:user)
+
+      @game = @user1.new_game('multi-player')[0]
+      @user1.invite_existing_user(@user2, @game)
+      @user1.invite_existing_user(@user3, @game)
+      @user1.invite_existing_user(@user4, @game)
+      @user1.invite_existing_user(@user5, @game)
+      @user2.accept_invitation(@game)
+      @user3.accept_invitation(@game)
+      @user4.accept_invitation(@game)
+      @game = MadlibrisGame.find(@game.id) 
+    end
+
+    it "returns a round and a first book choice" do 
+      
+      output = @game.build_round_models
+
+      expect(output).to be_a Array
+      expect(output[0]).to be_a Round
+      expect(output[1]).to be_a BookChoice
+    end
+
+    it "has output that all ties together and is in the database." do
+
+      output = @game.build_round_models
+      round = Round.find(output[0].id)
+      book_choice = BookChoice.find(output[1].id)
+      game = Game.find(@game.id)
+
+      expect(round.game.id).to eq game.id
+      expect(book_choice.games_user.user_role).to eq "host"
+      expect(round.book_choice).to eq book_choice
+      expect(game.users.include?(book_choice.user)).to eq true
+
+    end
+  end
 
 end
