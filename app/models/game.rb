@@ -19,18 +19,12 @@ class Game < ActiveRecord::Base
 
     event :game_active do
       after do
+        self.rounds.build
         self.save
       end
       transitions :from => :proposing, :to => :playing
     end
 
-    # event :clean do
-    #   transitions :from => :running, :to => :cleaning
-    # end
-
-    # event :sleep do
-    #   transitions :from => :running, :to => :sleeping, :guard => :cleaning_needed?
-    # end
   end
 
 

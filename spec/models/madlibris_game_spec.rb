@@ -31,6 +31,7 @@ describe MadlibrisGame do
       @user5.accept_invitation(@game)
       game = MadlibrisGame.find(@game.id)
       expect(game.playing?).to eq true
+      expect(game.rounds.any?).to eq true 
     end
 
     it "returns false if one outstanding invitee is pending" do
@@ -49,6 +50,7 @@ describe MadlibrisGame do
       @user5.reject_invitation(@game)
       game = MadlibrisGame.find(@game.id)
       expect(game.playing?).to eq true
+      expect(game.rounds.any?).to eq true
     end
   end
 
