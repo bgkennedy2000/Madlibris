@@ -4,6 +4,8 @@ class GamesUser < ActiveRecord::Base
   belongs_to :game
   belongs_to :madlibris_game
   belongs_to :user
+  has_one :line_choice
+  has_one :book_choice
 
   validates :game_id, presence: true
   validates :invitation_status, presence: true
@@ -13,6 +15,7 @@ class GamesUser < ActiveRecord::Base
   scope :pendings, -> { where("invitation_status = ?", "pending") }
   scope :accepteds, -> { where("invitation_status = ?", "accepted") }
   scope :where_host, -> { where("user_role = ?", "host") }
+  scope :where_invitee, -> { where("user_role = ?", "invitee") }
 
   after_initialize :defaults
 
@@ -74,6 +77,7 @@ class GamesUser < ActiveRecord::Base
   def enough_players?
     game.games_users.accepteds.length > 3
   end
+
 
 
 

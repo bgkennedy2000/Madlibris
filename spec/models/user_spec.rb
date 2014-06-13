@@ -142,7 +142,77 @@ describe User do
 
 
     end
+  end
 
+  describe ".choose_book(round, book)" do
+
+    before(:each) do
+      @userA = create(:user)
+      @userB = create(:user)
+      @userC = create(:user)
+      @userD = create(:user)
+      @userE = create(:user)
+      @game = @userA.new_game("multi-player")[0]
+      @userA.invite_existing_user(@userB, @game)[0]
+      @userA.invite_existing_user(@userC, @game)[0]
+      @userA.invite_existing_user(@userD, @game)[0]
+      @userB.accept_invitation(@game)      
+      @userC.accept_invitation(@game)  
+      @userD.accept_invitation(@game) 
+      @game = MadlibrisGame.find(@game.id)
+      @round = @game.rounds.first
+      @book = Book.build_book_from_epub('public/gutenberg/pg58.epub')
+
+    end
+
+    it "sets the book in the book_choice and is accessible by the round" do
+      @userA.choose_book(@round, @book)
+      @round = Round.find(@round.id)
+
+      expect(@round.book_choice.book).to eq @book
+      expect(@round.book_choice.persisted?).to eq true
+    end
+
+    it "changes the state of the round to playing." do
+      @userA.choose_book(@round, @book)
+      @round = Round.find(@round.id)
+
+      expect(@round.playing?).to eq true
+    end
+
+    it "creates new first_line for all other members of the game and sends them each a notification to read the book and draft a fake first sentence of that book" do
+      @userA.choose_book(@round, @book)
+      @round = Round.find(@round.id)
+      binding.pry
+
+      expect(@round.first_lines.length).to eq @round.games_users.length - 1
+      invitee_games_users = @round.games_users.select { |gu| gu.user_role == "invitee" }
+      truth_array = invitee_games_users.map { |gu| gu.first_line.exist? }
+      expect(truth_array.include?(false)).to eq false
+    end
+
+    it "can only be set by the host" do
+      @userB.choose_book(@round, @book)
+      @round = Round.find(@round.id)
+
+      expect(@round.playing?).to eq false
+      expect(@round.first_lines).to eq []
+    end
+
+    it "returns an array of notifications to the users" do
+      
+      messages = @userA.choose_book(@round, @book)
+
+      expect(messages.class).to eq Array
+      messages.each { |message|
+        expect(message.class).to eq Notification
+        expect(message.user_id).should_not be nil
+      }
+    end
+
+    it "sets the introductory content of the new first lines to the introductory content of the true first line" do
+      pending
+    end
   end
 
 

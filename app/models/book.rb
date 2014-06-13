@@ -111,7 +111,6 @@ class Book < ActiveRecord::Base
   end
 
   def self.google_data_valid?(google_data)
-    binding.pry
     if google_data == false || google_data.include?(nil) || google_data.empty? 
       false
     elsif google_data[0].gsub(/\s+/, "") == "" || google_data[0].gsub(/\s+/, "") == nil || google_data[1].gsub(/\s+/, "") == "" || google_data[1].gsub(/\s+/, "") == nil
@@ -132,27 +131,6 @@ class Book < ActiveRecord::Base
     end
   end
 
-  # def self.destroy_models(models_array)
-  #   models_array.flatten.each { |model| model.destroy }
-  # end
-
-  # def self.models_saved?(model_array)
-  #   elements = model_array.length
-  #   truth_array = [ ]
-  #   i = 0
-  #   (elements - 1).times do 
-  #     if model_array[i].class == Array
-  #       model_array[i].each { |model| truth_array << model.save }
-  #     else
-  #       truth_array << model.save
-  #     end
-  #   end
-  #   if truth_array.flatten.include?(false)
-  #     false
-  #   else
-  #     true
-  #   end
-  # end
 
   def self.create_dependent_models(book, reader, google_data)
     authors = reader.authors.map { |author| book.authors.build(name: author) }

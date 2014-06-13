@@ -16,6 +16,26 @@ class User < ActiveRecord::Base
   
   after_create :welcome_email
 
+  def choose_book(round, book)
+    book_choice(round, book)
+    round.games_users.where_invitee.map {
+      |game_user|
+      if round.create_first_line_and_associate_to_round(game_user, book)
+        game_user.user.notifications.create(text: "#{self.username} choose a #{book.title} to be the book for this round.  Please read about this book and try to draft what you think might be the first sentence of this book.")
+      end
+    }
+  end
+
+
+  def book_choice(round, book)
+    choice = BookChoice.new(round_id: round.id)
+    choice.book = book
+    choice.round = round
+    choice.games_user = get_accepted_game_user(round.game)
+    choice.save
+  end
+
+
   def new_game(kind)
     game = MadlibrisGame.create(kind: kind)
     game_user = games_users.create(game_id: game.id, user_role: "host")
