@@ -46,19 +46,50 @@ class User < ActiveRecord::Base
   end
 
   def pending_invites
-    games_users.select { |games_user| games_user.try(:pending?) }
+    games_users.pendings
+  end
+
+  def accepteds
+    games_users.accepteds
   end
 
   def accept_invitation(game)
-    game_user = pending_invites.select { |games_user| games_user.try(:game) == game }[0]
+    game_user = get_pending_game_user(game)
     game_user.try(:accept) 
     game_user
   end
 
   def reject_invitation(game)
-    game_user = pending_invites.select { |games_user| games_user.try(:game) == game }[0]
-    game_user.reject
+    game_user = get_pending_game_user(game)
+    game_user.try(:reject)
     game_user
+  end
+
+  def uninvite_from_game(user, game)
+    game_user = user.get_pending_game_user(game) 
+    game_user ||= user.get_accepted_game_user(game)
+    if host?(game) && game_user.may_kick_out?
+      game_user.kick_out
+    end
+    game_user
+  end
+
+  def host?(game)
+    game_user = get_pending_game_user(game) 
+    game_user ||= get_accepted_game_user(game)
+    if game_user.user_role == "host"
+      true
+    else
+      false
+    end
+  end
+
+  def get_pending_game_user(game)
+    pending_invites.select { |games_user| games_user.try(:game) == game }[0]
+  end
+
+  def get_accepted_game_user(game)
+    accepteds.select { |games_user| games_user.try(:game) == game }[0]
   end
 
   def nickname_or_email?

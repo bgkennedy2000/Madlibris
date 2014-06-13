@@ -86,7 +86,7 @@ describe User do
   end
 
   describe ".accept_invitation(game)" do
-    it "makes a game_user accept an invite" do
+    it "makes a game_user accept an invite and persists it in the database" do
       
       @userF = create(:user)
       @game_game_user1 = @userE.invite_existing_user(@userF, @game2)
@@ -95,6 +95,9 @@ describe User do
 
       expect(game_user.accepted?).to eq true
 
+      @userG = User.find(@userF.id)
+      updated_game_user = @userG.games_users.select { |gu| gu.game_id == @game_game_user1[0].id }[0]
+      expect(updated_game_user.accepted?).to eq true
     end
   end
 
@@ -110,6 +113,37 @@ describe User do
 
     end
   end    
+
+  describe ".uninvite_from_game" do
+    it "if you are a host, allows you to uninvite a pending user from a game" do
+      
+      game_user = @userA.uninvite_from_game(@userD, @game)
+      expect(game_user.kicked_out?).to eq true
+
+      game_user = @userB.uninvite_from_game(@userC, @game)
+      expect(game_user.kicked_out?).to eq false
+    
+    end
+
+    it "allows the host to kick out players from the game if there are enought players after the kickout" do
+      @userB.accept_invitation(@game)      
+      @userC.accept_invitation(@game)  
+      @userD.accept_invitation(@game) 
+      game = MadlibrisGame.find(@game.id)
+
+      game_user = @userA.uninvite_from_game(@userD, game)
+      expect(game_user.user.id).to eq @userD.id
+      expect(game_user.kicked_out?).to eq true
+
+      game = MadlibrisGame.find(@game.id)
+      game_user = @userA.uninvite_from_game(@userC, game)
+      expect(game_user.user.id).to eq @userC.id
+      expect(game_user.kicked_out?).to eq false
+
+
+    end
+
+  end
 
 
     

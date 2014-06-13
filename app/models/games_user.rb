@@ -10,6 +10,9 @@ class GamesUser < ActiveRecord::Base
   validates :user_id, presence: true
   validates :user_role, inclusion: { in: ["host", "invitee"] }
 
+  scope :pendings, -> { where("invitation_status = ?", "pending") }
+  scope :accepteds, -> { where("invitation_status = ?", "accepted") }
+
   after_initialize :defaults
 
   def defaults
@@ -23,6 +26,7 @@ class GamesUser < ActiveRecord::Base
       state :pending
       state :accepted
       state :rejected
+      state :kicked_out
 
     event :invite do
       after do
@@ -33,11 +37,9 @@ class GamesUser < ActiveRecord::Base
     end
 
     event :accept do
-      before do
-        self.game.game_active if self.game.may_game_active?
-      end
 
       after do
+        self.game.game_active if self.game.may_game_active?
         self.save
       end
       transitions :from => :pending, :to => :accepted
@@ -52,12 +54,24 @@ class GamesUser < ActiveRecord::Base
       end
       transitions :from => :pending, :to => :rejected
     end
+  
+    event :kick_out do
+      after do
+        self.save
+      end
+      transitions from: :pending, to: :kicked_out
+      transitions from: :accepted, to: :kicked_out, guard: :enough_players?
+    end
   end
 
   def send_invite
     if user.notifications.create(text: "#{user.username} has challenged you to a game")
       invite
     end
+  end
+
+  def enough_players?
+    game.games_users.accepteds.length > 3
   end
 
 

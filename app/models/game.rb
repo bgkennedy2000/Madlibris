@@ -21,7 +21,7 @@ class Game < ActiveRecord::Base
       after do
         self.save
       end
-      transitions :from => :proposing, :to => :playing, guard: :ready_to_play?
+      transitions :from => :proposing, :to => :playing
     end
 
     # event :clean do
