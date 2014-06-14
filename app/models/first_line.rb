@@ -1,10 +1,10 @@
 class FirstLine < ActiveRecord::Base
-  attr_accessible :book_id, :true_line, :text, :user_id, :state
+  attr_accessible :book_id, :true_line, :text, :user_id, :state, :introductory_content_id
   
   belongs_to :book
   belongs_to :user
   has_many :line_choices
-  belongs_to :introductory_contents
+  belongs_to :introductory_content
   has_many :first_lines_rounds
   has_many :rounds, through: :first_lines_rounds
 

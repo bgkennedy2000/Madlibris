@@ -166,28 +166,29 @@ describe User do
     end
 
     it "sets the book in the book_choice and is accessible by the round" do
+      
       @userA.choose_book(@round, @book)
-      @round = Round.find(@round.id)
-
-      expect(@round.book_choice.book).to eq @book
-      expect(@round.book_choice.persisted?).to eq true
+      
+      expect(@book.id).to be_a Integer
+      expect(@round.book_choice).to be_a BookChoice
+      expect(@round.book_choice.book.id).to be @book.id
+        
     end
 
     it "changes the state of the round to playing." do
       @userA.choose_book(@round, @book)
       @round = Round.find(@round.id)
 
-      expect(@round.playing?).to eq true
+      expect(@round.first_line_writing?).to eq true
     end
 
     it "creates new first_line for all other members of the game and sends them each a notification to read the book and draft a fake first sentence of that book" do
       @userA.choose_book(@round, @book)
       @round = Round.find(@round.id)
-      binding.pry
 
       expect(@round.first_lines.length).to eq @round.games_users.length - 1
       invitee_games_users = @round.games_users.select { |gu| gu.user_role == "invitee" }
-      truth_array = invitee_games_users.map { |gu| gu.first_line.exist? }
+      truth_array = invitee_games_users.map { |gu| gu.user.first_lines.any? }
       expect(truth_array.include?(false)).to eq false
     end
 
@@ -195,7 +196,7 @@ describe User do
       @userB.choose_book(@round, @book)
       @round = Round.find(@round.id)
 
-      expect(@round.playing?).to eq false
+      expect(@round.first_line_writing?).to eq false
       expect(@round.first_lines).to eq []
     end
 
@@ -206,13 +207,69 @@ describe User do
       expect(messages.class).to eq Array
       messages.each { |message|
         expect(message.class).to eq Notification
-        expect(message.user_id).should_not be nil
+        expect(message.user_id).not_to be nil
       }
     end
 
     it "sets the introductory content of the new first lines to the introductory content of the true first line" do
-      pending
+      @userA.choose_book(@round, @book)
+      round = Round.find(@round.id)
+
+      round.first_lines.each {
+        |first_line|
+        expect(first_line.introductory_content.id).to eq @book.introductory_content.id
+      }
     end
+
+    it "sets the book_choice status to completed" do
+      @userA.choose_book(@round, @book)
+      round = Round.find(@round.id)
+
+      expect(round.book_choice.completed?).to eq true
+    end
+  end
+
+  describe "def host?(game)" do
+    it "returns true if the user is the host of the game and false if not the host" do
+      userA = create(:user)
+      game = userA.new_game("multi-player")[0]
+      userB = create(:user)
+
+      expect(userA.host?(game)).to eq true
+      expect(userB.host?(game)).to eq false
+    end
+  end
+
+  describe "def make_book_choice(round, book)" do 
+    it "saves to the database a new book choice for that round, with that book" do
+
+      userA = create(:user)
+      game = userA.new_game("multi-player")[0]
+      @book = Book.build_book_from_epub('public/gutenberg/pg58.epub')
+      game.build_round_models
+      game = MadlibrisGame.find(game.id)
+
+      userA.make_book_choice(game.rounds.first, @book)
+      round = Round.find(game.rounds.first.id)
+
+      expect(round.book_choice.book.id).to eq @book.id
+
+    end
+  end
+
+  describe ".draft_first_line(round)" do
+    it "add the first line text to the first_line for that round" do
+
+    end
+
+    it "moves the first_line for that round to complete" do 
+      pending
+    end    
+  end
+
+
+  describe ".choose_first_line(round)" do
+    it "selects "
   end
 
 

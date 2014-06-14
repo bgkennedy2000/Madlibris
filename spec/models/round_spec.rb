@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe Author do
+describe Round do
 
 end

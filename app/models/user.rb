@@ -11,28 +11,39 @@ class User < ActiveRecord::Base
   has_many :games, through: :games_users
   has_many :rounds, through: :games
   has_many :notifications
+  has_many :first_lines
 
   validate :nickname_or_email?
   
   after_create :welcome_email
 
   def choose_book(round, book)
-    book_choice(round, book)
-    round.games_users.where_invitee.map {
-      |game_user|
-      if round.create_first_line_and_associate_to_round(game_user, book)
-        game_user.user.notifications.create(text: "#{self.username} choose a #{book.title} to be the book for this round.  Please read about this book and try to draft what you think might be the first sentence of this book.")
-      end
-    }
+    if host?(round.game)
+      make_book_choice(round, book)
+      messages = round.games_users.where_invitee.map {
+        |game_user|
+        if round.create_first_line_and_associate_to_round(game_user, book)
+          game_user.user.notifications.create(text: "#{self.username} choose a #{book.title} to be the book for this round.  Please read about this book and try to draft what you think might be the first sentence of this book.")
+        end
+      }
+      round.play if round.may_play?
+      messages
+    else
+      [ ]
+    end
   end
 
+  def host?(game)
+    games_users = games_users.where_host
+    truth_array = games.map { |games_user| games_user.game == game }
+    truth_array.include?(true)
+  end
 
-  def book_choice(round, book)
-    choice = BookChoice.new(round_id: round.id)
-    choice.book = book
-    choice.round = round
-    choice.games_user = get_accepted_game_user(round.game)
-    choice.save
+  def make_book_choice(round, book)
+    book_choice = BookChoice.find_by_round_id(round.id)
+    book_choice.book_id = book.id
+    book_choice.games_user_id = get_accepted_game_user(round.game).id
+    book_choice.complete
   end
 
 
@@ -97,7 +108,7 @@ class User < ActiveRecord::Base
   def host?(game)
     game_user = get_pending_game_user(game) 
     game_user ||= get_accepted_game_user(game)
-    if game_user.user_role == "host"
+    if game_user.try(:user_role) == "host"
       true
     else
       false

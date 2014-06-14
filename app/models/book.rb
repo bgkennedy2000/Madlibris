@@ -9,6 +9,7 @@ class Book < ActiveRecord::Base
   validate :author_and_title_unique?
   
   has_many :rounds
+  has_many :book_choices
   has_one :introductory_content, dependent: :destroy
   has_many :first_lines, through: :introductory_content
   has_many :other_lines, through: :introductory_content

@@ -15,8 +15,16 @@ class Round < ActiveRecord::Base
 
   aasm :column => 'state' do
     state :book_choosing, :initial => true
-    state :playing
+    state :first_line_writing
+    state :line_choosing
     state :completed
+
+    event :play do
+      after do
+        self.save
+      end
+      transitions :from => :book_choosing, :to => :first_line_writing
+    end
   end
 
   def build_book_choice
@@ -28,9 +36,11 @@ class Round < ActiveRecord::Base
   end
 
   def create_first_line_and_associate_to_round(game_user, book)
-    line = FirstLine.create(book_id: book.id, true_line: false, user_id: game_user.user_id)
+    line = FirstLine.create(book_id: book.id, true_line: false, user_id: game_user.user_id, introductory_content_id: book.introductory_content.id)
     first_lines_rounds.create(first_line_id: line.id)
+
   end
+
 
 
 end
