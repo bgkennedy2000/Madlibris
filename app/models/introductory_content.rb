@@ -7,6 +7,7 @@ class IntroductoryContent < ActiveRecord::Base
   def self.create_from_book_and_reader(book, reader)
     intro = IntroductoryContent.new(book_id: book.id)
     true_line = intro.first_lines.build(true_line: true, text: reader.text_array.last)
+    true_line.write
     intro = OtherLine.create_lines_from_reader_and_intro(intro, reader)
     intro
   end

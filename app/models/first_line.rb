@@ -13,6 +13,8 @@ class FirstLine < ActiveRecord::Base
   validate :fake_line_has_game_user?
   validate :fake_line_has_user?
 
+  scope :true_line, -> { where("true_line = ?", true ) } 
+
   include AASM
 
   aasm :column => 'state' do
@@ -20,6 +22,9 @@ class FirstLine < ActiveRecord::Base
     state :written
 
     event :write do
+      after do
+        save
+      end
 
       transitions :from => :pending, :to => :written
     end

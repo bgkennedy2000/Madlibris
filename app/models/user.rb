@@ -12,15 +12,25 @@ class User < ActiveRecord::Base
   has_many :rounds, through: :games
   has_many :notifications
   has_many :first_lines
+  has_many :first_lines_rounds
 
   validate :nickname_or_email?
   
   after_create :welcome_email
 
   def draft_first_line(round, text)
-    game_user = get_accepted_game_user(round.game)
-    first_line = game_user.first_line
+    first_line = get_first_line(round)
     first_line.update_attributes(text: text)
+    first_line.write
+    round = Round.find(round.id)
+    if round.may_all_lines_complete?
+      round.all_lines_complete 
+    end
+  end
+
+  def get_first_line(round)
+    game_user = get_accepted_game_user(round.game)
+    first_line = round.first_lines.select{ |line| line.game_user_id == game_user.id }[0]
   end
 
 

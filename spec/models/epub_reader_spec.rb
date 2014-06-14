@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe EpubReader do
+  pending "Turned off.  Turn back on if eReader is played with"
   
   it "Reads in pg58.epub and produces the correct output array" do
     reader = EpubReader.new('public/gutenberg/pg58.epub')

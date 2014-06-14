@@ -8,12 +8,12 @@ class Round < ActiveRecord::Base
   has_one :book, through: :book_choice
   has_many :line_choices
   has_many :first_lines_rounds
-  has_many :first_lines, through: :first_lines_rounds
+  has_many :first_lines, through: :first_lines_rounds, uniq: true
 
 
   include AASM
 
-  aasm :column => 'state' do
+  aasm :column => 'state', :whiny_transitions => false do
     state :book_choosing, :initial => true
     state :first_line_writing
     state :line_choosing
@@ -25,10 +25,31 @@ class Round < ActiveRecord::Base
       end
       transitions :from => :book_choosing, :to => :first_line_writing
     end
+
+    event :all_lines_complete do
+      after do
+        self.save
+      end
+      transitions :from => :first_line_writing, :to => :line_choosing, guard: :all_first_lines_written?
+    end    
+
+
+    event :complete do
+      after do
+        self.save
+      end
+      transitions :from => :line_choosing, :to => :completed
+    end
   end
 
   def all_first_lines_written?
-    first_lines.count == game_users.count?
+    all_complete_first_lines = all_first_lines.select{|line| line.written?}
+    all_complete_first_lines.count == games_users.count
+  end
+
+  def all_first_lines
+    false_first_lines = first_lines
+    all_first_lines = false_first_lines << book.first_lines.true_line
   end
 
   def build_book_choice
