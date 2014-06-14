@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140613142447) do
+ActiveRecord::Schema.define(:version => 20140614124929) do
 
   create_table "authors", :force => true do |t|
     t.string   "name"
@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(:version => 20140613142447) do
     t.integer  "user_id"
     t.integer  "introductory_content_id"
     t.string   "state"
+    t.integer  "game_user_id"
   end
 
   create_table "first_lines_rounds", :force => true do |t|

@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe User do
-  
+  @book = Book.build_book_from_epub('public/gutenberg/pg58.epub')
+  binding.pry
   before(:each) do
     @user = create(:user)
     @userA = create(:user)
@@ -161,12 +162,12 @@ describe User do
       @userD.accept_invitation(@game) 
       @game = MadlibrisGame.find(@game.id)
       @round = @game.rounds.first
-      @book = Book.build_book_from_epub('public/gutenberg/pg58.epub')
+      
 
     end
 
     it "sets the book in the book_choice and is accessible by the round" do
-      
+      binding.pry
       @userA.choose_book(@round, @book)
       
       expect(@book.id).to be_a Integer
@@ -184,7 +185,7 @@ describe User do
 
     it "creates new first_line for all other members of the game and sends them each a notification to read the book and draft a fake first sentence of that book" do
       @userA.choose_book(@round, @book)
-      @round = Round.find(@round.id)
+
 
       expect(@round.first_lines.length).to eq @round.games_users.length - 1
       invitee_games_users = @round.games_users.select { |gu| gu.user_role == "invitee" }
@@ -212,6 +213,8 @@ describe User do
     end
 
     it "sets the introductory content of the new first lines to the introductory content of the true first line" do
+
+
       @userA.choose_book(@round, @book)
       round = Round.find(@round.id)
 
@@ -245,7 +248,6 @@ describe User do
 
       userA = create(:user)
       game = userA.new_game("multi-player")[0]
-      @book = Book.build_book_from_epub('public/gutenberg/pg58.epub')
       game.build_round_models
       game = MadlibrisGame.find(game.id)
 
@@ -257,19 +259,45 @@ describe User do
     end
   end
 
-  describe ".draft_first_line(round)" do
-    it "add the first line text to the first_line for that round" do
+  describe ".draft_first_line(round, text)" do
+    before(:each) do
+      @userB.accept_invitation(@game)
+      @userC.accept_invitation(@game)
+      @userD.accept_invitation(@game)
+      @userA.choose_book(@game.rounds.first, @book) 
+      @game = Game.find(@game.id)
+      @round = @game.round.first
+      @userB.draft_first_line(@round, "this is the first line!")
+    end
 
+    it "add the first line text to the first_line for that round" do
+      game_user = @userB.get_accepted_games_user(@game)
+      first_line = FirstLinesRound.find_by_round_id(@round.id).first_line
+      expect(first_line.text).to eq "this is the first line!"
     end
 
     it "moves the first_line for that round to complete" do 
-      pending
-    end    
+      game_user = @userB.get_accepted_games_user(@game)
+      first_line = FirstLinesRound.find_by_round_id(@round.id).first_line
+      expect(first_line.complete?).to eq true
+    end
+
+    it "doesn't complete the round if all first lines have been written" do
+      round = Round.find(@round.id)
+      expect(round.complete?).to eq false
+    end
+
+    it "completes the round if all first lines have been written" do
+      @userC.draft_first_line(@round, "this is the first line!")
+      @userD.draft_first_line(@round, "this is the first line!")
+      round = Round.find(@round.id)
+      expect(round.complete?).to eq true
+    end
   end
 
 
   describe ".choose_first_line(round)" do
-    it "selects "
+    
   end
 
 

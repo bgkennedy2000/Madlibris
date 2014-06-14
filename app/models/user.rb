@@ -17,6 +17,13 @@ class User < ActiveRecord::Base
   
   after_create :welcome_email
 
+  def draft_first_line(round, text)
+    game_user = get_accepted_game_user(round.game)
+    first_line = game_user.first_line
+    first_line.update_attributes(text: text)
+  end
+
+
   def choose_book(round, book)
     if host?(round.game)
       make_book_choice(round, book)
