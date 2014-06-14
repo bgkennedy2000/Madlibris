@@ -283,13 +283,24 @@ describe User do
       @userC.draft_first_line(@round, "this is the first line!")
       @userD.draft_first_line(@round, "this is the first line!")
       round = Round.find(@round.id)
-      
+
       expect(round.line_choosing?).to eq true
     end
   end
 
 
-  describe ".choose_first_line(round)" do
+  describe ".choose_first_line(round, first_line)" do
+    it "updates the line_choice for that user in that round to be the first line that they've chosen." do
+
+    end
+
+    it "doesn't update the line choice if a line is chosen that is not in that round" do
+      pending
+    end
+
+    it "after the line is successfully chosen, it changes the state of the line choice to complete" do 
+      pending
+    end
     
   end
 

@@ -4,7 +4,7 @@ class GamesUser < ActiveRecord::Base
   belongs_to :game
   belongs_to :madlibris_game
   belongs_to :user
-  has_one :line_choice
+  has_many :line_choices
   has_one :book_choice
   has_many :first_lines
 

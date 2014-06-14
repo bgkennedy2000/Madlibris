@@ -65,6 +65,20 @@ class Round < ActiveRecord::Base
     first_lines_rounds.create(first_line_id: line.id)
   end
 
+  def create_line_choice_and_associate_to_round(game_user)
+    if line_choices.create(games_user_id: game_user.id)
+      game_user.user.notifications.create(text: "Its time to choose which line you think is the real first line of the book.")
+    end
+  end
+
+  def build_line_choices
+    games_users.each {
+      |game_user|
+      if game_user.user.host?(game)
+        create_line_choice_and_associate_to_round(game_user)
+      end
+    }
+  end
 
 
 end

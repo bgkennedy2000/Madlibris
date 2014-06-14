@@ -1,5 +1,5 @@
 class LineChoice < ActiveRecord::Base
-  attr_accessible :first_line_id, :round_id, :state, :book_choice_id
+  attr_accessible :first_line_id, :round_id, :state, :book_choice_id, :games_user_id
  
   validates :round_id, presence: true
   validates :games_user_id, presence: true
