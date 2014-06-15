@@ -48,19 +48,15 @@ class User < ActiveRecord::Base
 
 
   def choose_book(round, book)
-    if host?(round.game) && round.game.rounds.length == 1
-      make_book_choice(round, book)
-      messages = round.games_users.where_invitee.map {
-        |games_user|
-        if round.create_first_line_and_associate_to_round(games_user, book)
-          games_user.user.notifications.create(text: "#{self.username} choose a #{book.title} to be the book for this round.  Please read about this book and try to draft what you think might be the first sentence of this book.")
-        end
-      }
-      round.play if round.may_play?
-      messages
-    else
-      [ ]
-    end
+    make_book_choice(round, book)
+    messages = round.games_users.where_invitee.map {
+      |games_user|
+      if round.create_first_line_and_associate_to_round(games_user, book)
+        games_user.user.notifications.create(text: "#{self.username} choose a #{book.title} to be the book for this round.  Please read about this book and try to draft what you think might be the first sentence of this book.")
+      end
+    }
+    round.play
+    messages
   end
 
   def host?(game)
@@ -73,7 +69,7 @@ class User < ActiveRecord::Base
     book_choice = BookChoice.find_by_round_id(round.id)
     book_choice.book_id = book.id
     book_choice.games_user_id = get_accepted_games_user(round.game).id
-    book_choice.complete
+    book_choice.complete && round.save
   end
 
 

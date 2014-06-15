@@ -139,6 +139,10 @@ describe MadlibrisGame do
       expect(game.users.include?(book_choice.user)).to eq true
 
     end
+
+    it "builds book_choice for only game_users who have not previously made a book_choice" do
+
+    end
   end
 
   describe ".new_round_needed?" do
@@ -181,7 +185,7 @@ describe MadlibrisGame do
       @first_lineE = @round1.all_first_lines.sample
       @userE.choose_first_line(@round1, @first_lineE)
 
-      @round1 = Round.find(@round.id)
+      @round1 = Round.find(@round1.id)
       @game = @round1.game
     end
 

@@ -131,4 +131,51 @@ describe Round do
 
   end
 
+  describe ".determine_book_chooser" do 
+    before(:each) do
+      @userA = create(:user)
+      @userB = create(:user)
+      @userC = create(:user)
+      @userD = create(:user)
+      @userE = create(:user)
+      @game = @userA.new_game("multi-player")[0]
+      @userA.invite_existing_user(@userB, @game)
+      @userA.invite_existing_user(@userC, @game)
+      @userA.invite_existing_user(@userD, @game)
+      @userB.accept_invitation(@game)
+      @userC.accept_invitation(@game)
+      @userD.accept_invitation(@game)
+      @round = Round.find_by_game_id(@game.id)
+    end
+
+    it "book chooser is host if first round" do
+      expect(@round.game.rounds.length).to eq 1
+      expect(Round.where(game_id: @game.id)).to eq 1
+      expect(@round.determine_book_chooser).to be_a GamesUser
+      expect(@round.determine_book_chooser.user_role).to eq "host"
+      expect(@round.determine_book_chooser.id).to eq @round.games_users.select { |gu| gu.user_role = "host"}[0].id
+    end
+
+    before(:each) do
+      @userA.choose_book(@round, @@book1)
+      @userB.draft_first_line(@round, "this is the first line!")
+      @userC.draft_first_line(@round, "this is the first line!")
+      @userD.draft_first_line(@round, "this is the first line!")
+      @first_lineB = @round.all_first_lines.sample
+      @userB.choose_first_line(@round, @first_lineB)
+      @first_lineC = @round.all_first_lines.sample
+      @userC.choose_first_line(@round, @first_lineC)
+      @first_lineD = @round.all_first_lines.sample  
+      @userD.choose_first_line(@round, @first_lineC)     
+    end
+
+    it "sets book chooser to an invitee in the other rounds" do
+      @round = Game.find(@game.id).rounds.last
+      expect(@round.game.rounds.length).to eq 2
+      expect(@round.determine_book_chooser).to be_a GamesUser
+      expect(@round.determine_book_chooser.user_role).to eq "invitee"
+    end
+  end
+
+
 end

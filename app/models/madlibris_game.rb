@@ -10,7 +10,7 @@ class MadlibrisGame < Game
   end
 
   def new_round_needed?
-    not_enough_rounds? && any_incomplete_rounds?
+    not_enough_rounds? || any_incomplete_rounds?
   end
 
   def not_enough_rounds?
@@ -39,6 +39,10 @@ class MadlibrisGame < Game
     end
   end
 
+  def latest_round
+    rounds.sort_by { |r| r.created_at }.last
+  end
+
   def no_outstanding_invites?
     games_users.select { |games_user| games_user.try(:pending?) } == [ ]
   end
@@ -48,9 +52,9 @@ class MadlibrisGame < Game
   end
 
   def build_round_models
-    round = self.rounds.create
-    book_choice = round.build_book_choice
-    [round, book_choice]
+      round = self.rounds.create
+      book_choice = round.build_book_choice
+      [round, book_choice]
   end
 
   def host

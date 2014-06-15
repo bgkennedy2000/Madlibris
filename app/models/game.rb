@@ -28,7 +28,7 @@ class Game < ActiveRecord::Base
       after do
         self.save
       end
-      transitions :from => :game_active, :to => :completed
+      transitions :from => :playing, :to => :completed
     end
 
   end

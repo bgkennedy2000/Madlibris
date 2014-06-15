@@ -11,6 +11,9 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each { |f| require f }
 RSpec.configure do |config|
   config.before(:suite) {
     @@book1 = Book.build_book_from_epub('public/gutenberg/pg58.epub')
+    @@book2 = Book.build_book_from_epub("public/gutenberg/snowy.arsc.alaska.edu/gutenberg/cache/generated/7941/pg7941.epub")
+    @@book3 = Book.build_book_from_epub("public/gutenberg/snowy.arsc.alaska.edu/gutenberg/cache/generated/7952/pg7952.epub")
+    @@book4 = Book.build_book_from_epub("public/gutenberg/snowy.arsc.alaska.edu/gutenberg/cache/generated/7866/pg7866.epub")
   }
 
 

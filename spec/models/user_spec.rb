@@ -190,13 +190,6 @@ describe User do
       expect(truth_array.include?(false)).to eq false
     end
 
-    it "can only be set by the host" do
-      @userB.choose_book(@round, @@book1)
-      @round = Round.find(@round.id)
-
-      expect(@round.first_line_writing?).to eq false
-      expect(@round.first_lines).to eq []
-    end
 
     it "returns an array of notifications to the users" do
       
@@ -354,6 +347,63 @@ describe User do
       @userD.choose_first_line(@round, @round.all_first_lines.sample)
       @round = Round.find(@round.id)
       expect(@round.game.rounds.length).to eq 2  
+    end
+
+    it "creates a book choice for a game_user who hasn't previously made a book_choice in that game" do
+      @game = Game.find(@game.id)
+      round1 = @game.rounds.first
+      round2 = @game.rounds.last
+      
+      expect(round1.book_choice.games_user_id).to_not eq round2.book_choice.games_user_id
+    end
+
+    it "ends the game when no more rounds are needed" do
+      @round = Round.find(@round.id)
+      @userC.choose_first_line(@round, @round.all_first_lines.sample)
+      @userD.choose_first_line(@round, @round.all_first_lines.sample)
+      @game = Game.find(@game.id)
+      @round2 = @game.latest_round
+      book_chooser = @round2.book_chooser
+      line_choosers = @round2.line_choosers
+      book_chooser.choose_book(@round2, @@book2)
+      @round2 = Round.find(@round2.id)
+      line_choosers.each { |chooser|
+        chooser.draft_first_line(@round2, "this is the second first line!")
+      }
+      @round2 = Round.find(@round2.id)
+      line_choosers = @round2.line_choosers
+      line_choosers.each { |chooser|
+        chooser.chooser_first_line(@round2, @round2.all_first_lines.sample)
+      }
+      @round3 = @game.latest_round
+      book_chooser = @round3.book_chooser
+      line_choosers = @round3.line_choosers
+      book_chooser.choose_book(@round3, @@book3)
+      @round3 = Round.find(@round3.id)
+      line_choosers.each { |chooser|
+        chooser.draft_first_line(@round3, "this is the third first line!")
+      }
+      @round3 = Round.find(@round3.id)
+      line_choosers = @round3.line_choosers
+      line_choosers.each { |chooser|
+        chooser.chooser_first_line(@round3, @round3.all_first_lines.sample)
+      }
+      @round4 = @game.latest_round
+      book_chooser = @round4.book_chooser
+      line_choosers = @round4.line_choosers
+      book_chooser.choose_book(@round4, @@book4)
+      @round4 = Round.find(@round4.id)
+      line_choosers.each { |chooser|
+        chooser.draft_first_line(@round4, "this is the fourth first line!")
+      }
+      @round4 = Round.find(@round4.id)
+      line_choosers = @round4.line_choosers
+      line_choosers.each { |chooser|
+        chooser.chooser_first_line(@round4, @round4.all_first_lines.sample)
+      }
+      
+
+
     end
     
   end

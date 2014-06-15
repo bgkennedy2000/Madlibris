@@ -51,7 +51,7 @@ describe GamesUser do
     end
   
     it "returns a single line_choice for game user." do
-      
+ 
       expect(@games_userB.get_line_choice(@round1)).to be_a LineChoice
     end
 

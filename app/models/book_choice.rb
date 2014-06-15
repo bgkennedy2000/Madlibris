@@ -1,10 +1,8 @@
 class BookChoice < ActiveRecord::Base
   attr_accessible :book_id, :round_id, :state, :games_user_id
 
-  validates :round_id, presence: true
   validates :round_id, uniqueness: true
   validates :games_user_id, presence: true
-  validates :round_id, uniqueness: true
 
   belongs_to :round
   belongs_to :book
@@ -13,7 +11,7 @@ class BookChoice < ActiveRecord::Base
 
   include AASM
 
-  aasm :column => 'state' do
+  aasm :column => 'state', :whiny_transitions => false do
     state :pending, :initial => true
     state :completed
 

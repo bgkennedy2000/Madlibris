@@ -27,7 +27,7 @@ class GamesUser < ActiveRecord::Base
 
   include AASM
 
-    aasm :column => 'invitation_status' do
+    aasm :column => 'invitation_status', :whiny_transitions => false do
       state :to_do, :initial => true
       state :pending
       state :accepted

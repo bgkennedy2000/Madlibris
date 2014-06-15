@@ -1,7 +1,9 @@
 class Round < ActiveRecord::Base
   attr_accessible :game_id, :state
-  validates :game_id, presence: true
   
+  validates :game_id, presence: true
+  validate :previous_round_complete?
+
   belongs_to :game
   has_one :book_choice
   has_many :games_users, through: :game
@@ -9,6 +11,7 @@ class Round < ActiveRecord::Base
   has_many :line_choices
   has_many :first_lines_rounds
   has_many :first_lines, through: :first_lines_rounds, uniq: true
+
 
 
   include AASM
@@ -43,6 +46,13 @@ class Round < ActiveRecord::Base
     end
   end
 
+  def previous_round_complete?
+    if game.rounds.length > 1
+      previous_rounds = game.rounds.sort_by { |round| round.created_at }
+      errors.add(:base, "round cannot save until previous round completed.") unless previous_rounds.select { |round| round.completed? } == previous_rounds 
+    end
+  end
+
   def all_line_choices_made?
     truth_array = line_choices.collect { |lc| lc.completed? }
     !truth_array.include?(false)
@@ -59,11 +69,22 @@ class Round < ActiveRecord::Base
   end
 
   def build_book_choice
-    host_games_user = games_users.where_host[0]
-     if choice = BookChoice.create(games_user_id: host_games_user.id, round_id: self.id)
-        host_games_user.user.notifications.create(text: "To get the game started, please select a book")
+    book_chooser = determine_book_chooser
+     if choice = BookChoice.create(games_user_id: book_chooser.id, round_id: self.id)
+        book_chooser.user.notifications.create(text: "To get the game started, please select a book")
      end
      choice
+  end
+
+  def determine_book_chooser
+    rounds = Round.where(game_id: game.id)
+    if rounds.length < 2
+      games_users.where_host[0]
+    else
+      previous_round = rounds.sort_by { |r| r.created_at }[-2]
+      previous_line_choices = previous_round.line_choices.sort_by {|lc| lc.updated_at }
+      previous_line_choices.last.games_user
+    end
   end
 
   def create_first_line_and_associate_to_round(games_user, book)
@@ -89,6 +110,15 @@ class Round < ActiveRecord::Base
 
   def get_games_user_that_made_book_choice
     book_choice.games_user
+  end
+
+  def book_chooser
+    book_choice.games_user.user
+  end
+
+  def line_choosers
+    games_users_array = games_users.select { |gu| gu.user.id != book_chooser.id }
+    games_users_array.collect{ |gu| gu.user }
   end
 
   def current_score
