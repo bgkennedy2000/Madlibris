@@ -24,6 +24,13 @@ class Game < ActiveRecord::Base
       transitions :from => :proposing, :to => :playing
     end
 
+    event :complete do
+      after do
+        self.save
+      end
+      transitions :from => :game_active, :to => :completed
+    end
+
   end
 
 

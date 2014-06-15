@@ -70,6 +70,13 @@ class GamesUser < ActiveRecord::Base
     end
   end
 
+  def get_line_choice(round)
+    line_choices.select { |lc| lc.round_id == round.id }[0]
+
+    # scopes not working for some reason
+    # LineChoice.in_round(round).with_games_user(self).first
+  end
+
   def send_invite
     if user.notifications.create(text: "#{user.username} has challenged you to a game")
       invite

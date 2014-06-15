@@ -1,7 +1,26 @@
 class MadlibrisGame < Game
   # validate :has_multi_players?
 
+  def progress_game
+    if new_round_needed?
+      build_round_models
+    else
+      complete
+    end
+  end
 
+  def new_round_needed?
+    not_enough_rounds? && any_incomplete_rounds?
+  end
+
+  def not_enough_rounds?
+    rounds.length < games_users.length
+  end
+
+  def any_incomplete_rounds?
+    incomplete_rounds = rounds.select { |r| r.completed? == false }
+    incomplete_rounds.any?
+  end
   
   def ready_to_play?
     if enough_players? && no_outstanding_invites? && no_invites_to_send?
@@ -29,13 +48,13 @@ class MadlibrisGame < Game
   end
 
   def build_round_models
-    first_round = self.rounds.create
-    book_choice = first_round.build_book_choice
-    [first_round, book_choice]
+    round = self.rounds.create
+    book_choice = round.build_book_choice
+    [round, book_choice]
   end
 
   def host
-    game_users
+    games_users
   end
 
 

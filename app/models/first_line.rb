@@ -1,8 +1,8 @@
 class FirstLine < ActiveRecord::Base
-  attr_accessible :book_id, :true_line, :text, :user_id, :state, :introductory_content_id, :game_user_id
+  attr_accessible :book_id, :true_line, :text, :user_id, :state, :introductory_content_id, :games_user_id
   
   belongs_to :book
-  belongs_to :game_user
+  belongs_to :games_user
   belongs_to :user
   has_many :line_choices
   belongs_to :introductory_content
@@ -10,7 +10,7 @@ class FirstLine < ActiveRecord::Base
   has_many :rounds, through: :first_lines_rounds
 
   validates :true_line, :inclusion => {:in => [true, false]}
-  validate :fake_line_has_game_user?
+  validate :fake_line_has_games_user?
   validate :fake_line_has_user?
 
   scope :true_line, -> { where("true_line = ?", true ) } 
@@ -37,9 +37,9 @@ class FirstLine < ActiveRecord::Base
     end
   end
 
-  def fake_line_has_game_user?
+  def fake_line_has_games_user?
     if self.true_line == false
-      errors.add(:base, "Fake lines require a game_user_id") unless self.game_user_id
+      errors.add(:base, "Fake lines require a games_user_id") unless self.games_user_id
     end
   end
 

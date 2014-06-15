@@ -23,7 +23,7 @@ describe User do
     @game_games_user = @user.new_game("single-player")
   end
 
-    it "returns an array with a new game and a new game_user" do
+    it "returns an array with a new game and a new games_user" do
 
 
       expect(@game_games_user).to be_a Array
@@ -50,7 +50,7 @@ describe User do
       @game_games_user = @userA.invite_existing_user(@userB, @game )
     end
 
-    it "returns an array with a new game and a new game_user" do
+    it "returns an array with a new game and a new games_user" do
 
       expect(@game_games_user).to be_a Array
       expect(@game_games_user[0]).to be_a Game
@@ -85,30 +85,30 @@ describe User do
   end
 
   describe ".accept_invitation(game)" do
-    it "makes a game_user accept an invite and persists it in the database" do
+    it "makes a games_user accept an invite and persists it in the database" do
       
       @userF = create(:user)
-      @game_game_user1 = @userE.invite_existing_user(@userF, @game2)
+      @game_games_user1 = @userE.invite_existing_user(@userF, @game2)
 
-      game_user = @userF.accept_invitation(@game_game_user1[0])
+      games_user = @userF.accept_invitation(@game_games_user1[0])
 
-      expect(game_user.accepted?).to eq true
+      expect(games_user.accepted?).to eq true
 
       @userG = User.find(@userF.id)
-      updated_game_user = @userG.games_users.select { |gu| gu.game_id == @game_game_user1[0].id }[0]
-      expect(updated_game_user.accepted?).to eq true
+      updated_games_user = @userG.games_users.select { |gu| gu.game_id == @game_games_user1[0].id }[0]
+      expect(updated_games_user.accepted?).to eq true
     end
   end
 
   describe "reject_invitation" do
-    it "makes a game_user reject an invite" do
+    it "makes a games_user reject an invite" do
 
       @userF = create(:user)
-      @game_game_user1 = @userE.invite_existing_user(@userF, @game2)
+      @game_games_user1 = @userE.invite_existing_user(@userF, @game2)
 
-      game_user = @userF.reject_invitation(@game_game_user1[0])
+      games_user = @userF.reject_invitation(@game_games_user1[0])
 
-      expect(game_user.rejected?).to eq true
+      expect(games_user.rejected?).to eq true
 
     end
   end    
@@ -116,11 +116,11 @@ describe User do
   describe ".uninvite_from_game" do
     it "if you are a host, allows you to uninvite a pending user from a game" do
       
-      game_user = @userA.uninvite_from_game(@userD, @game)
-      expect(game_user.kicked_out?).to eq true
+      games_user = @userA.uninvite_from_game(@userD, @game)
+      expect(games_user.kicked_out?).to eq true
 
-      game_user = @userB.uninvite_from_game(@userC, @game)
-      expect(game_user.kicked_out?).to eq false
+      games_user = @userB.uninvite_from_game(@userC, @game)
+      expect(games_user.kicked_out?).to eq false
     
     end
 
@@ -130,14 +130,14 @@ describe User do
       @userD.accept_invitation(@game) 
       game = MadlibrisGame.find(@game.id)
 
-      game_user = @userA.uninvite_from_game(@userD, game)
-      expect(game_user.user.id).to eq @userD.id
-      expect(game_user.kicked_out?).to eq true
+      games_user = @userA.uninvite_from_game(@userD, game)
+      expect(games_user.user.id).to eq @userD.id
+      expect(games_user.kicked_out?).to eq true
 
       game = MadlibrisGame.find(@game.id)
-      game_user = @userA.uninvite_from_game(@userC, game)
-      expect(game_user.user.id).to eq @userC.id
-      expect(game_user.kicked_out?).to eq false
+      games_user = @userA.uninvite_from_game(@userC, game)
+      expect(games_user.user.id).to eq @userC.id
+      expect(games_user.kicked_out?).to eq false
 
 
     end
@@ -268,7 +268,7 @@ describe User do
     end
 
     it "add the first line text to the first_line for that round" do
-      game_user = @userB.get_accepted_game_user(@game)
+      games_user = @userB.get_accepted_games_user(@game)
       first_line = FirstLinesRound.find_by_round_id(@round.id).first_line
       expect(first_line.text).to eq "this is the first line!"
     end
@@ -290,16 +290,70 @@ describe User do
 
 
   describe ".choose_first_line(round, first_line)" do
-    it "updates the line_choice for that user in that round to be the first line that they've chosen." do
+    before(:each) do
+      @user = create(:user)
+      @userA = create(:user)
+      @userB = create(:user)
+      @userC = create(:user)
+      @userD = create(:user)
+      @userE = create(:user)
+      @game = @userA.new_game("multi-player")[0]
+      @game = @userA.invite_existing_user(@userB, @game)[0]
+      @game = @userA.invite_existing_user(@userC, @game)[0]
+      @game = @userA.invite_existing_user(@userD, @game)[0]
+      @game2 = @userE.new_game("multi-player")[0]
+      @game2 = @userE.invite_existing_user(@userD, @game2)[0]
+      @userB.accept_invitation(@game)
+      @userC.accept_invitation(@game)
+      @userD.accept_invitation(@game)
+      @userA.choose_book(@game.rounds.first, @@book1)
+      @round = Game.find(@game.id).rounds.first 
+      @userB.draft_first_line(@round, "this is the first line!")
+      @userC.draft_first_line(@round, "this is the first line!")
+      @userD.draft_first_line(@round, "this is the first line!")
+      @round = Round.find(@round.id)
+      @round.build_line_choices
+      @first_line = @round.all_first_lines.sample
+      @userB.choose_first_line(@round, @first_line)
+      @game = MadlibrisGame.find(@game.id)
+      
+    end
 
+    it "updates the line_choice for that user in that round to be the first line that they've chosen." do
+      games_user = @userB.get_accepted_games_user(@game)
+      expect(games_user.line_choices).to_not be nil
+      expect(games_user.line_choices.count).to eq 1
+
+      lc = games_user.line_choices.select{ |lc| lc.first_line_id == @first_line.id }
+      expect(lc[0].first_line_id).to eq @first_line.id
+      expect(lc[0].round_id).to eq @round.id
     end
 
     it "doesn't update the line choice if a line is chosen that is not in that round" do
       pending
+
     end
 
     it "after the line is successfully chosen, it changes the state of the line choice to complete" do 
-      pending
+      games_user = @userB.get_accepted_games_user(Game.find(@game.id))
+      lc = games_user.line_choices.select{ |lc| lc.first_line_id == @first_line.id }
+      expect(lc[0].completed?).to eq true
+    end
+
+    it "changes the state of the round to complete if all the line choices have been made." do
+      @round = Round.find(@round.id)
+      @userC.choose_first_line(@round, @round.all_first_lines.sample)
+      @userD.choose_first_line(@round, @round.all_first_lines.sample)
+      @round = Round.find(@round.id)
+      expect(@round.completed?).to eq true
+    end
+
+    it "triggers a new round if a new round is needed" do
+      @round = Round.find(@round.id)
+      @userC.choose_first_line(@round, @round.all_first_lines.sample)
+      @userD.choose_first_line(@round, @round.all_first_lines.sample)
+      @round = Round.find(@round.id)
+      expect(@round.game.rounds.length).to eq 2  
     end
     
   end

@@ -18,6 +18,19 @@ class User < ActiveRecord::Base
   
   after_create :welcome_email
 
+  def choose_first_line(round, first_line)
+    line_choice = get_line_choice(round)
+    line_choice.first_line_id = first_line.id
+    line_choice.complete if line_choice.may_complete?
+    round = Round.find(round.id)
+    round.complete if round.may_complete?
+  end
+
+  def get_line_choice(round)
+    games_user = get_accepted_games_user(round.game)
+    games_user.get_line_choice(round)
+  end
+
   def draft_first_line(round, text)
     first_line = get_first_line(round)
     first_line.update_attributes(text: text)
@@ -29,18 +42,18 @@ class User < ActiveRecord::Base
   end
 
   def get_first_line(round)
-    game_user = get_accepted_game_user(round.game)
-    first_line = round.first_lines.select{ |line| line.game_user_id == game_user.id }[0]
+    games_user = get_accepted_games_user(round.game)
+    first_line = round.first_lines.select{ |line| line.games_user_id == games_user.id }[0]
   end
 
 
   def choose_book(round, book)
-    if host?(round.game)
+    if host?(round.game) && round.game.rounds.length == 1
       make_book_choice(round, book)
       messages = round.games_users.where_invitee.map {
-        |game_user|
-        if round.create_first_line_and_associate_to_round(game_user, book)
-          game_user.user.notifications.create(text: "#{self.username} choose a #{book.title} to be the book for this round.  Please read about this book and try to draft what you think might be the first sentence of this book.")
+        |games_user|
+        if round.create_first_line_and_associate_to_round(games_user, book)
+          games_user.user.notifications.create(text: "#{self.username} choose a #{book.title} to be the book for this round.  Please read about this book and try to draft what you think might be the first sentence of this book.")
         end
       }
       round.play if round.may_play?
@@ -59,29 +72,29 @@ class User < ActiveRecord::Base
   def make_book_choice(round, book)
     book_choice = BookChoice.find_by_round_id(round.id)
     book_choice.book_id = book.id
-    book_choice.games_user_id = get_accepted_game_user(round.game).id
+    book_choice.games_user_id = get_accepted_games_user(round.game).id
     book_choice.complete
   end
 
 
   def new_game(kind)
     game = MadlibrisGame.create(kind: kind)
-    game_user = games_users.create(game_id: game.id, user_role: "host")
+    games_user = games_users.create(game_id: game.id, user_role: "host")
     if game.save
       # invite themselves to the game to transition state
-      game_user.invite
-      game_user.accept
-      [game, game_user]
+      games_user.invite
+      games_user.accept
+      [game, games_user]
     else  
       false
     end
   end
 
   def invite_existing_user(user, game)
-    game_user = user.games_users.create(game_id: game.id, user_role: "invitee")
+    games_user = user.games_users.create(game_id: game.id, user_role: "invitee")
     if game.save
-      game_user.send_invite
-      [game, game_user]
+      games_user.send_invite
+      [game, games_user]
     else
       false
     end
@@ -102,41 +115,41 @@ class User < ActiveRecord::Base
   end
 
   def accept_invitation(game)
-    game_user = get_pending_game_user(game)
-    game_user.try(:accept) 
-    game_user
+    games_user = get_pending_games_user(game)
+    games_user.try(:accept) 
+    games_user
   end
 
   def reject_invitation(game)
-    game_user = get_pending_game_user(game)
-    game_user.try(:reject)
-    game_user
+    games_user = get_pending_games_user(game)
+    games_user.try(:reject)
+    games_user
   end
 
   def uninvite_from_game(user, game)
-    game_user = user.get_pending_game_user(game) 
-    game_user ||= user.get_accepted_game_user(game)
-    if host?(game) && game_user.may_kick_out?
-      game_user.kick_out
+    games_user = user.get_pending_games_user(game) 
+    games_user ||= user.get_accepted_games_user(game)
+    if host?(game) && games_user.may_kick_out?
+      games_user.kick_out
     end
-    game_user
+    games_user
   end
 
   def host?(game)
-    game_user = get_pending_game_user(game) 
-    game_user ||= get_accepted_game_user(game)
-    if game_user.try(:user_role) == "host"
+    games_user = get_pending_games_user(game) 
+    games_user ||= get_accepted_games_user(game)
+    if games_user.try(:user_role) == "host"
       true
     else
       false
     end
   end
 
-  def get_pending_game_user(game)
+  def get_pending_games_user(game)
     pending_invites.select { |games_user| games_user.try(:game) == game }[0]
   end
 
-  def get_accepted_game_user(game)
+  def get_accepted_games_user(game)
     accepteds.select { |games_user| games_user.try(:game) == game }[0]
   end
 
