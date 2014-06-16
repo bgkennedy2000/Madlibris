@@ -61,6 +61,37 @@ class MadlibrisGame < Game
     games_users
   end
 
+  def current_score
+    game_score_hash = zero_points_hash
+    if completed_rounds.any?
+      completed_rounds.each { |round|
+        game_score_hash = add_round_to_current_score(game_score_hash, round.current_score)
+      }
+    end
+    game_score_hash
+  end
+
+  def add_round_to_current_score(round_hash, current_score_hash)
+    game_user_ids = round_hash.keys.sort
+    raise "error compiling score" unless game_user_ids == current_score_hash.keys.sort
+      game_user_ids.each { |id|
+        current_score_hash[id] = current_score_hash[id] + round_hash[id]
+      }
+    current_score_hash
+  end
+
+  def zero_points_hash
+    hash = { }
+    games_users.each {
+        |gu|
+        hash[gu.id] = 0
+    }
+    hash
+  end
+
+  def completed_rounds
+    rounds.select { |round| round.completed?}
+  end
 
 
 

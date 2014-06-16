@@ -130,7 +130,7 @@ class Round < ActiveRecord::Base
 
   def current_score
     if completed? == false
-      nil
+      { }
     else
       score_hash = { }
       games_users.each {
