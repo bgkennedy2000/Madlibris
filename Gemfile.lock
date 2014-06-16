@@ -86,6 +86,9 @@ GEM
       multipart-post (>= 1.2, < 3)
     ffi (1.9.3)
     formatador (0.2.5)
+    foundation-rails (5.2.3.0)
+      railties (>= 3.1.0)
+      sass (>= 3.2.0)
     googlebooks (0.0.8)
       httparty
     guard (2.6.1)
@@ -279,6 +282,7 @@ DEPENDENCIES
   epub_validator
   factory_girl_rails
   faker
+  foundation-rails
   googlebooks
   guard-rspec
   haml-rails

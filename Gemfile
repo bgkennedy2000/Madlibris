@@ -11,6 +11,7 @@ gem 'epub_validator'
 gem 'stanford-core-nlp'
 gem 'googlebooks'
 gem 'namae'
+gem 'foundation-rails'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
