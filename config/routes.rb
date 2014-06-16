@@ -1,7 +1,12 @@
 Madlibris::Application.routes.draw do
 
   devise_for :users, controllers: { :omniauth_callbacks => "omniauth_callbacks" }
-  root to: "home#index"
+
+  resources :madlibris_games  
+  root to: "madlibris_games#options_display"
+  post 'madlibris_games', to: 'madlibris_games#create_game', as: "create_madlibris_game"
+  get 'madlibris_game_view', to: 'madlibris_games#game_view', as: "play_madlibris_game"
+  post 'madlibris_games', to: 'madlibris_games#choose_book', as: "choose_madlibris_book"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

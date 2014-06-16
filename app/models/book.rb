@@ -6,7 +6,9 @@ class Book < ActiveRecord::Base
   validates :title, presence: true
   validates :image_url, presence: true
   validates :source, presence: true
-  validate :author_and_title_unique?
+  validates :title, uniqueness: true
+
+  
   
   has_many :rounds
   has_many :book_choices
@@ -15,10 +17,12 @@ class Book < ActiveRecord::Base
   has_many :other_lines, through: :introductory_content
   has_and_belongs_to_many :authors
 
-  def author_and_title_unique? 
-    book_to_compare = Book.find_by_title(self.title)
-
-    # don't forget to put some code here
+  def self.game_view(game)
+    if game.proposing? or game.choosing_book?
+      Book.all.sample(10)
+    else 
+      game.latest_round.book
+    end
   end
 
   def self.build_from_gutenberg(source_file_of_paths)

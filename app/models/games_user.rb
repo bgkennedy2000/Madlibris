@@ -70,8 +70,20 @@ class GamesUser < ActiveRecord::Base
     end
   end
 
+  def my_move?(round)
+    truth_array = [ ]
+    truth_array << true if book_choice.try(:state) != "completed"
+    truth_array << true if get_line_choice(round).try(:state) != "completed"
+    truth_array << true if get_first_line(round).try(:state) != "written"
+    truth_array.include?(true)
+  end
+
+  def get_first_line(round)
+    line_choices.select { |lc| lc.round_id == round.id }.try(:first)
+  end
+
   def get_line_choice(round)
-    line_choices.select { |lc| lc.round_id == round.id }[0]
+    line_choices.select { |lc| lc.round_id == round.id }.try(:first)
 
     # scopes not working for some reason
     # LineChoice.in_round(round).with_games_user(self).first

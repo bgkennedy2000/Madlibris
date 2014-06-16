@@ -1,0 +1,25 @@
+%dl.accordion{"data-accordion" => "", class: "small-12 medium-8 large-6 small-centered columns" }
+  %dd
+    = link_to "Create New Game", '#invite'
+    #invite.content
+      = form_tag(create_madlibris_game_path)
+      %label Challenge Opponenets  (minimum of 2):
+      %input{type: "text", name: "username1", placeholder: "username"}
+      %input{type: "text", name: "username2", placeholder: "username"}
+      and add more (optional): 
+      %input{type: "text", name: "username3", placeholder: "username"}
+      %input{type: "text", name: "username4", placeholder: "username"}
+      %input{type: "text", name: "username5", placeholder: "username"}
+      %input{type: "submit", class: "button extend"}
+  = if @games
+    %dd
+      = link_to "Current Games", '#current_games'
+      #current_games.content
+        %p Games vs: 
+        - @games.each do |game|
+          .row
+            .small-10.medium-7.small-centered.columns
+              = display_game_info(current_user, game)
+
+
+

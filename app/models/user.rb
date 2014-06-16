@@ -15,8 +15,20 @@ class User < ActiveRecord::Base
   has_many :first_lines_rounds
 
   validate :nickname_or_email?
+  validates :username, uniqueness: true
   
   after_create :welcome_email
+
+  def ongoing_madlibris_games
+    games.select { |g| g.type == "MadlibrisGame" && g.state != "completed"}
+  end
+
+  def my_move?(game)
+    games_user = get_accepted_games_user(game)
+    truth_array = game.rounds.collect { |round| 
+      games_user.my_move?(round)
+    }
+  end
 
   def choose_first_line(round, first_line)
     line_choice = get_line_choice(round)

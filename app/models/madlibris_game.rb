@@ -1,6 +1,25 @@
 class MadlibrisGame < Game
   # validate :has_multi_players?
 
+  def choosing_book?
+    truth_array = rounds.select { |r| r.book_choosing? }
+    truth_array.include?(true)
+  end
+  
+
+  def self.invite_usernames_to_game(usernames_array, game_host)
+    new_game = game_host.new_game("multi-player")[0]
+    confirmed_invites = [ ]
+    usernames_array.each { |username|
+      if user = User.find_by_username(username)
+        game_host.invite_existing_user(user, new_game)
+        confirmed_invites << username
+      end
+    }
+    game_host.notifications.create(text: "#{confirmed_invites.join(", ")} were successfully invited to the game}")
+    new_game
+  end
+
   def progress_game
     if new_round_needed?
       build_round_models

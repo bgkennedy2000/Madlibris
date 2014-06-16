@@ -21,7 +21,7 @@ class Game < ActiveRecord::Base
         self.build_round_models
         self.save
       end
-      transitions :from => :proposing, :to => :playing
+      transitions :from => :proposing, :to => :playing, guard: :all_accepted?
     end
 
     event :complete do
@@ -31,6 +31,11 @@ class Game < ActiveRecord::Base
       transitions :from => :playing, :to => :completed
     end
 
+  end
+
+  def all_accepted? 
+    truth_array = games_users.collect { |gu| gu.accepted? }
+    !truth_array.include?(false)
   end
 
 
