@@ -1,21 +1,24 @@
-- @books.each do |book|
-  .row
-    .small-12.medium-8.small-centered.columns.text-center
-      = image_tag book.image_url
-  .row
-    .small-12.medium-8.small-centered.columns.text-center      
-      = form_tag(choose_madlibris_book_path)
-      = hidden_field_tag(book_id: book.id)
-      %input{type: "submit", class: "button small", value: "select_book"}
-  .row
-    .small-12.medium-8.small-centered.columns.text-center
-      .h2 
-        = book.title
-  .row
-    .small-12.medium-8.small-centered.columns.text-center      
-      .h2.subheader
-        = display_authors(book)
-  .row
-    .small-12.medium-8.small-centered.columns.text-center
-      .p.text-justify
-        = book.synopsis
+.single-item
+  - @books.each do |book|
+    .book-container
+      .row
+        .small-12.medium-8.small-centered.columns.text-center
+          = image_tag(book.image_url, class: "book-image")
+      .row
+        .small-12.medium-8.small-centered.columns.text-center      
+          = form_tag(choose_madlibris_book_path)
+          = hidden_field_tag(book_id: book.id)
+          %input{type: "submit", class: "button small", value: "select book"}
+      .row
+        .small-12.medium-8.small-centered.columns.text-center
+          .h1 
+            = book.title
+      .row
+        .small-12.medium-8.small-centered.columns.text-center      
+          .h1.subheader
+            = display_authors(book)
+      .row
+        .small-12.medium-8.small-centered.columns.text-center
+          .p.text-justify
+            = book.synopsis
+- javascript_include_tag('book_choice.js')

@@ -12,6 +12,8 @@ gem 'stanford-core-nlp'
 gem 'googlebooks'
 gem 'namae'
 gem 'foundation-rails'
+gem 'slick_rails'
+gem 'cancan'
 
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'

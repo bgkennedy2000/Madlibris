@@ -41,6 +41,7 @@ GEM
       debug_inspector (>= 0.0.1)
     buftok (0.2.0)
     builder (3.0.4)
+    cancan (1.6.10)
     capybara (2.3.0)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -232,6 +233,8 @@ GEM
       sass (>= 3.1.10)
       tilt (~> 1.3)
     simple_oauth (0.2.0)
+    slick_rails (1.3.6.1)
+      railties (>= 3.1)
     slop (3.5.0)
     sprockets (2.2.2)
       hike (~> 1.2)
@@ -275,6 +278,7 @@ DEPENDENCIES
   aasm
   better_errors
   binding_of_caller
+  cancan
   capybara
   coffee-rails (~> 3.2.1)
   devise (>= 2.0.0)
@@ -300,6 +304,7 @@ DEPENDENCIES
   rails (= 3.2.18)
   rspec-rails (= 2.14.1)
   sass-rails (~> 3.2.3)
+  slick_rails
   stanford-core-nlp
   twitter
   uglifier (>= 1.0.3)
