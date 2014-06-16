@@ -17,7 +17,7 @@ class FirstLine < ActiveRecord::Base
 
   include AASM
 
-  aasm :column => 'state', :whiny_transitions => false do
+  aasm :column => 'state' do
     state :pending, :initial => true
     state :written
 

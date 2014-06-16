@@ -373,7 +373,7 @@ describe User do
       @round2 = Round.find(@round2.id)
       line_choosers = @round2.line_choosers
       line_choosers.each { |chooser|
-        chooser.chooser_first_line(@round2, @round2.all_first_lines.sample)
+        chooser.choose_first_line(@round2, @round2.all_first_lines.sample)
       }
       @round3 = @game.latest_round
       book_chooser = @round3.book_chooser

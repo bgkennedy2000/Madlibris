@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
     line_choice.first_line_id = first_line.id
     line_choice.complete if line_choice.may_complete?
     round = Round.find(round.id)
+
     round.complete if round.may_complete?
   end
 
@@ -36,7 +37,7 @@ class User < ActiveRecord::Base
     first_line.update_attributes(text: text)
     first_line.write
     round = Round.find(round.id)
-    if round.may_all_lines_complete?
+    if round.all_first_lines_written?
       round.all_lines_complete 
     end
   end
@@ -48,14 +49,13 @@ class User < ActiveRecord::Base
 
 
   def choose_book(round, book)
-    make_book_choice(round, book)
-    messages = round.games_users.where_invitee.map {
+    round = make_book_choice(round, book) 
+    messages = round.get_line_choosers_games_users.map {
       |games_user|
       if round.create_first_line_and_associate_to_round(games_user, book)
         games_user.user.notifications.create(text: "#{self.username} choose a #{book.title} to be the book for this round.  Please read about this book and try to draft what you think might be the first sentence of this book.")
       end
     }
-    round.play
     messages
   end
 
@@ -66,10 +66,12 @@ class User < ActiveRecord::Base
   end
 
   def make_book_choice(round, book)
-    book_choice = BookChoice.find_by_round_id(round.id)
-    book_choice.book_id = book.id
-    book_choice.games_user_id = get_accepted_games_user(round.game).id
-    book_choice.complete && round.save
+    round.book_choice.book_id = book.id
+    round.book_choice.games_user_id = get_accepted_games_user(round.game).id
+    if round.book_choice.complete
+      round.play
+    end
+    round
   end
 
 

@@ -2,14 +2,14 @@ class Round < ActiveRecord::Base
   attr_accessible :game_id, :state
   
   validates :game_id, presence: true
-  validate :previous_round_complete?
+  # validate :previous_round_complete?
 
   belongs_to :game
   has_one :book_choice
   has_many :games_users, through: :game
   has_one :book, through: :book_choice
   has_many :line_choices
-  has_many :first_lines_rounds
+  has_many :first_lines_rounds, dependent: :destroy
   has_many :first_lines, through: :first_lines_rounds, uniq: true
 
 
@@ -42,9 +42,10 @@ class Round < ActiveRecord::Base
         self.save
         self.game.progress_game
       end
-      transitions :from => :line_choosing, :to => :completed
+      transitions :from => :line_choosing, :to => :completed, guard: :all_line_choices_made?
     end
   end
+
 
   def previous_round_complete?
     if game.rounds.length > 1
@@ -72,12 +73,18 @@ class Round < ActiveRecord::Base
     book_chooser = determine_book_chooser
      if choice = BookChoice.create(games_user_id: book_chooser.id, round_id: self.id)
         book_chooser.user.notifications.create(text: "To get the game started, please select a book")
+        
      end
      choice
   end
 
+  def get_line_choosers_games_users
+    users = line_choosers
+    users.collect { |user| user.get_accepted_games_user(game)}
+  end
+
   def determine_book_chooser
-    rounds = Round.where(game_id: game.id)
+    rounds = game.rounds << self
     if rounds.length < 2
       games_users.where_host[0]
     else

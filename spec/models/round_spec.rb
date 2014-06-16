@@ -150,7 +150,7 @@ describe Round do
 
     it "book chooser is host if first round" do
       expect(@round.game.rounds.length).to eq 1
-      expect(Round.where(game_id: @game.id)).to eq 1
+      expect(Round.where(game_id: @game.id).length).to eq 1
       expect(@round.determine_book_chooser).to be_a GamesUser
       expect(@round.determine_book_chooser.user_role).to eq "host"
       expect(@round.determine_book_chooser.id).to eq @round.games_users.select { |gu| gu.user_role = "host"}[0].id
