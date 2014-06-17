@@ -6,6 +6,9 @@ class MadlibrisGame < Game
     truth_array.include?(true)
   end
   
+  def invited_users
+    users = outstanding_invites.collect { |gu| gu.user }
+  end
 
   def self.invite_usernames_to_game(usernames_array, game_host)
     new_game = game_host.new_game("multi-player")[0]
@@ -17,7 +20,12 @@ class MadlibrisGame < Game
       end
     }
     game_host.notifications.create(text: "#{confirmed_invites.join(", ")} were successfully invited to the game}")
+    new_game.build_round_models
     new_game
+  end
+
+  def game_host
+    games_users.collect { |gu| gu.user if gu.user_role == "host" }.compact[0]
   end
 
   def progress_game
@@ -64,6 +72,10 @@ class MadlibrisGame < Game
 
   def no_outstanding_invites?
     games_users.select { |games_user| games_user.try(:pending?) } == [ ]
+  end
+
+  def outstanding_invites
+    games_users.select { |games_user| games_user.try(:pending?) }
   end
 
   def no_invites_to_send?

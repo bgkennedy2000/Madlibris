@@ -2,24 +2,48 @@
   %dd
     = link_to "Create New Game", '#invite'
     #invite.content
-      = form_tag(create_madlibris_game_path)
-      %label Challenge Opponenets  (minimum of 2):
-      %input{type: "text", name: "username1", placeholder: "username"}
-      %input{type: "text", name: "username2", placeholder: "username"}
-      and add more (optional): 
-      %input{type: "text", name: "username3", placeholder: "username"}
-      %input{type: "text", name: "username4", placeholder: "username"}
-      %input{type: "text", name: "username5", placeholder: "username"}
-      %input{type: "submit", class: "button extend"}
-  = if @games
+      = form_tag(create_madlibris_game_path) do |f|
+        %p "Challenge Opponenets  (minimum of 2):"
+        = text_field_tag name: "username1", placeholder: "username"
+        = text_field_tag name: "username2", placeholder: "username"
+        and add more (optional): 
+        = text_field_tag name: "username3", placeholder: "username"
+        = text_field_tag name: "username4", placeholder: "username"
+        = text_field_tag name: "username5", placeholder: "username"
+        = submit_tag "Send Invitations", class: "button medium"
     %dd
       = link_to "Current Games", '#current_games'
       #current_games.content
         %p Games vs: 
-        - @games.each do |game|
-          .row
-            .small-10.medium-7.small-centered.columns
-              = display_game_info(current_user, game)
-
+        - if @current_games
+          - @current_games.each do |game|
+            .row
+              - if current_user.host?(game) == true && game.playing? == false
+                .small-12.columns
+                  - game.invited_users.each do |user|
+                    .small-3.columns
+                      = render partial: "madlibris_games/uninvite_button", locals: {user: user, game: game}
+              - else
+                .small-12.columns
+                  = display_game_info(current_user, game)
+    %dd
+      = link_to "Pending Invites", '#pending_invites'
+      #pending_invites.content
+        %p Invitations from: 
+        - if @pending_invites
+          - @pending_invites.each do |game|
+            .row
+              .small-3.medium-4.columns
+                %p 
+                  = game.game_host.username
+              .small-4.columns
+                = form_tag(accept_invitation_path) do |f|
+                  = hidden_field_tag(:game_id, game.id)
+                  = submit_tag "Accept", class: "button small"
+              .small-4.columns
+                = form_tag(reject_invitation_path) do |f|
+                  = hidden_field_tag(:game_id, game.id)
+                  = submit_tag "Reject", class: "button small"
+- javascript_include_tag('options_display.js')
 
 

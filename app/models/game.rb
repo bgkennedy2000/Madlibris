@@ -18,7 +18,6 @@ class Game < ActiveRecord::Base
 
     event :game_active do
       after do
-        self.build_round_models
         self.save
       end
       transitions :from => :proposing, :to => :playing, guard: :all_accepted?

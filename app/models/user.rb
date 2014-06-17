@@ -19,8 +19,12 @@ class User < ActiveRecord::Base
   
   after_create :welcome_email
 
+  def invited_madlibris_games
+    pending_invites.collect { |games_user| games_user.game  }.compact
+  end
+
   def ongoing_madlibris_games
-    games.select { |g| g.type == "MadlibrisGame" && g.state != "completed"}
+    accepteds.collect { |games_user| games_user.game }.compact
   end
 
   def my_move?(game)
@@ -73,7 +77,7 @@ class User < ActiveRecord::Base
 
   def host?(game)
     games_users = games_users.where_host
-    truth_array = games.map { |games_user| games_user.game == game }
+    truth_array = games.map { |games_user| games_user.game.id == game.id }
     truth_array.include?(true)
   end
 

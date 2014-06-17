@@ -2,9 +2,13 @@ class ApplicationController < ActionController::Base
   protect_from_forgery
   layout :layout_by_resource
 
+  rescue_from CanCan::AccessDenied do |exception|
+    redirect_to root_path
+  end
+
   protected
   def after_sign_in_path_for(resource)
-    root_path #update to games home screen
+    options_display_path || root_path
   end
 
   protected

@@ -6,5 +6,5 @@ $(document).ready(function(){
   });
   // overrides the slick styling to center book images
   $('img.book-image').css('display', 'inline');
-  $('img.book-image').css('margin-bottom', '1em')
+  $('img.book-image').css('margin', '1em 0')
 });
