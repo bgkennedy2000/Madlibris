@@ -9,12 +9,13 @@
 </head>
 <body>
   <header>
-    <p class="notice"><%= notice %></p>
-    <p class="alert"><%= alert %></p>
-    <% if current_user %>
-      <ul class='off-canvas-list'>
-        <li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
-      </ul>
+    <% if notice %>
+    <div class="alert-box success text-center"><%= notice %>
+    <a href="#" class="close">&times;</a></div>
+    <% end %>
+    <% if alert %>
+    <div class="alert-box warning text-center"><%= alert %>
+    <a href="#" class="close">&times;</a></div>
     <% end %>
   </header>
 

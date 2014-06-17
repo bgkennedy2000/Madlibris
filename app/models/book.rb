@@ -25,9 +25,9 @@ class Book < ActiveRecord::Base
 
   def self.game_view(game, user)
     if game.needs_to_choose_book?(user)
-      Book.all.sample(10)
+      Book.all.sample(5)
     else 
-      game.latest_round.book
+      game.latest_round.try(:book)
     end
   end
 

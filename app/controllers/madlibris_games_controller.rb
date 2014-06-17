@@ -15,7 +15,7 @@ class MadlibrisGamesController < ApplicationController
     usernames << params[:username1] << params[:username2] << params[:username3] << params[:username4] << params[:username5] 
     @user = current_user || @user
     @game = MadlibrisGame.invite_usernames_to_game(usernames, @user)
-    @books = Book.game_view(@game)
+    @books = Book.game_view(@game, @user)
     redirect_to(options_display_path)
   end
 
@@ -69,7 +69,7 @@ class MadlibrisGamesController < ApplicationController
     @user = current_user
     @game = MadlibrisGame.find(params[:game_id])
     @user.accept_invitation(@game)
-    options_display
+    redirect_to(options_display_path)
   end
 
   def reject_invite

@@ -24,7 +24,8 @@ class User < ActiveRecord::Base
   end
 
   def ongoing_madlibris_games
-    accepteds.collect { |games_user| games_user.game }.compact
+    all_accepted = accepteds.collect { |games_user| games_user.game }.compact
+    all_accepted.select { |game| game.completed? == false }
   end
 
   def my_move?(game)
