@@ -10,6 +10,42 @@ class MadlibrisGame < Game
     users = outstanding_invites.collect { |gu| gu.user }
   end
 
+  def book_chooser?(user)
+    chooser = latest_round.try(:book_chooser)
+    user == chooser
+  end
+
+  def book_choice_pending?
+    latest_round.book_choice.pending?
+  end
+
+  def needs_to_choose_book?(user)
+    book_chooser?(user) && book_choice_pending? && playing?
+  end
+
+  def line_chooser?(user)
+    line_choosers = latest_round.try(:line_choosers)
+    if line_choosers
+      line_choosers.include?(user)
+    end
+  end
+
+  def line_writing?
+    latest_round.first_line_writing?
+  end
+
+  def needs_to_write_line?(user)
+    line_chooser?(user) && line_writing? && user.get_first_line(latest_round).try(:pending?)
+  end
+
+  def line_choosing?
+    latest_round.line_choosing?
+  end
+
+  def needs_to_choose_line?(user)
+    line_chooser?(user) && line_choosing? && user.get_line_choice(latest_round).try(:pending?)
+  end
+
   def self.invite_usernames_to_game(usernames_array, game_host)
     new_game = game_host.new_game("multi-player")[0]
     confirmed_invites = [ ]
@@ -20,7 +56,6 @@ class MadlibrisGame < Game
       end
     }
     game_host.notifications.create(text: "#{confirmed_invites.join(", ")} were successfully invited to the game}")
-    new_game.build_round_models
     new_game
   end
 

@@ -1,6 +1,6 @@
 class Game < ActiveRecord::Base
   attr_accessible  :type, :kind, :state
-  has_many :games_users
+  has_many :games_users, dependent: :destroy
   has_many :users, through: :games_users
   has_many :rounds
   # validates :state, inclusion: { in: ["proposed", "ongoing", "completed"]}
@@ -18,6 +18,7 @@ class Game < ActiveRecord::Base
 
     event :game_active do
       after do
+        build_round_models
         self.save
       end
       transitions :from => :proposing, :to => :playing, guard: :all_accepted?

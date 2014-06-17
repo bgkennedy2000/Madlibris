@@ -4,28 +4,32 @@
     #invite.content
       = form_tag(create_madlibris_game_path) do |f|
         %p "Challenge Opponenets  (minimum of 2):"
-        = text_field_tag name: "username1", placeholder: "username"
-        = text_field_tag name: "username2", placeholder: "username"
+        = text_field_tag :username1, nil, placeholder: "madlibris username"
+        = text_field_tag :username2, nil, placeholder: "madlibris username"
         and add more (optional): 
-        = text_field_tag name: "username3", placeholder: "username"
-        = text_field_tag name: "username4", placeholder: "username"
-        = text_field_tag name: "username5", placeholder: "username"
+        = text_field_tag :username3
+        = text_field_tag :username4
+        = text_field_tag :username5
         = submit_tag "Send Invitations", class: "button medium"
     %dd
       = link_to "Current Games", '#current_games'
-      #current_games.content
-        %p Games vs: 
+      #current_games.content  
         - if @current_games
+          %p Games You Manage:
           - @current_games.each do |game|
             .row
-              - if current_user.host?(game) == true && game.playing? == false
-                .small-12.columns
-                  - game.invited_users.each do |user|
-                    .small-3.columns
-                      = render partial: "madlibris_games/uninvite_button", locals: {user: user, game: game}
-              - else
-                .small-12.columns
+              - if current_user.host?(game) == true
+                .small-9.columns
                   = display_game_info(current_user, game)
+                .small-3.columns
+                  %p edit game users
+        - if @current_games
+          %p Games Others Manage:
+          - @current_games.each do |game|
+            - if current_user.host?(game) == false
+              .row   
+                .small-12.columns
+                  = display_game_info(current_user, game)            
     %dd
       = link_to "Pending Invites", '#pending_invites'
       #pending_invites.content
@@ -47,3 +51,4 @@
 - javascript_include_tag('options_display.js')
 
 
+ 

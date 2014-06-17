@@ -1,0 +1,22 @@
+= render partial: "book", locals: {book: @books}
+- @books.introductory_content.other_lines.each do |ol|
+  .row
+    .small-12.medium-8.large-6.small-centered.columns.text-center
+      %h3
+        = ol.text
+= form_tag(choose_line_path) do |f|
+  .row
+    .small-12.medium-8.large-6.small-centered.columns.text-center
+      %p Which line is really the first line of the book?
+      - @round.all_first_lines.each do |fl|
+        - if fl.user_id != current_user.id
+          .row
+            .small-1.left
+              = radio_button_tag :first_line_id, fl.id
+            .small-11.text-left.right
+              = "#{fl.text}"
+            
+  .row
+    .small-12.medium-8.large-6.small-centered.columns
+      = hidden_field_tag(:round_id, @game.latest_round.id)
+      = submit_tag "submit", class: "button expand"

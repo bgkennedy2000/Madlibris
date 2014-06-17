@@ -1,0 +1,7 @@
+= render partial: "book", locals: {book: @books}
+.row
+  .small-12.medium-8.large-6.small-centered.columns
+    = form_tag(write_line_path) do |f|
+      = text_area_tag(:text, nil, placeholder: "Write here what you think is the first sentence of the book.  If you trick other players into thinking this sentence is the real first sentence of the book, you get points!")
+      = hidden_field_tag(:round_id, @game.latest_round.id)
+      = submit_tag "submit", class: "button expand"

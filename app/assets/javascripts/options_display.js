@@ -2,5 +2,5 @@ $(document).ready(function(){
   $('.disabled').click( function(ev) {
     event.preventDefault();
   });
-  $('.hide').hide();
+  $('.hide-button').hide();
 });

@@ -7,7 +7,8 @@ class Book < ActiveRecord::Base
   validates :image_url, presence: true
   validates :source, presence: true
   validates :title, uniqueness: true
-
+  # validate :description_is_not_first_line
+# create call back to prevent this situation from occuring
   
   
   has_many :rounds
@@ -17,8 +18,13 @@ class Book < ActiveRecord::Base
   has_many :other_lines, through: :introductory_content
   has_and_belongs_to_many :authors
 
-  def self.game_view(game)
-    if game.proposing? or game.choosing_book?
+  def description_is_not_first_line
+    # if self.introductory_content
+    # errors.add(:base, "first line and description are the same") 
+  end
+
+  def self.game_view(game, user)
+    if game.needs_to_choose_book?(user)
       Book.all.sample(10)
     else 
       game.latest_round.book

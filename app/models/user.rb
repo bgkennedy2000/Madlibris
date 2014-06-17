@@ -131,6 +131,7 @@ class User < ActiveRecord::Base
   def accept_invitation(game)
     games_user = get_pending_games_user(game)
     games_user.try(:accept) 
+    game.game_active if game.may_game_active?
     games_user
   end
 

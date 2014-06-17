@@ -11,6 +11,10 @@ Madlibris::Application.routes.draw do
   post 'accept_invite', to: 'madlibris_games#accept_invite', as: "accept_invitation"
   post 'reject_invite', to: 'madlibris_games#reject_invite', as: "reject_invitation"
   post 'uninvite', to: 'madlibris_games#uninvite', as: "uninvite_user"
+  get 'new_first_line/:id', to: 'madlibris_games#new_line', as: "new_first_line"
+  post 'write_first_line', to: 'madlibris_games#write_line', as: "write_line"
+  get 'new_line_choice/:id', to: 'madlibris_games#new_line_choice', as: "new_line_choice"
+  post 'make_line_choice', to: 'madlibris_games#choose_line', as: "choose_line"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
