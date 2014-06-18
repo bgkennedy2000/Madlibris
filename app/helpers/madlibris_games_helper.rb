@@ -6,7 +6,7 @@ module MadlibrisGamesHelper
   end
 
   def display_game_info(user, game)
-    link_to list_opponent_usernames(game, user), determine_game_url(game, user), class: "button expand #{link_class(user, game)}"
+    link_to list_opponent_usernames(game, user), determine_game_url(game, user), class: "button split #{link_class(user, game)}"
   end
 
   def list_opponent_usernames(game, user)
@@ -31,7 +31,7 @@ module MadlibrisGamesHelper
     if list_opponent_usernames(game, user) == ""
       classes << "hide-button"
     end
-    classes << "disabled" unless activate_button?(game, user)
+    classes << "disable" unless activate_button?(game, user)
     classes.join(" ")
   end
 

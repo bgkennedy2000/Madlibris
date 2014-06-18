@@ -26,7 +26,7 @@ optionsDisplay.noticeTimeout = function(){
 
 $(document).ready(function(){
   $('.disabled').click( function(ev) {
-    event.preventDefault();
+    ev.preventDefault();
   });
   $('.hide-button').hide();
   optionsDisplay.setupAccordion();

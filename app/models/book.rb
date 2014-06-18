@@ -7,6 +7,7 @@ class Book < ActiveRecord::Base
   validates :image_url, presence: true
   validates :source, presence: true
   validates :title, uniqueness: true
+  validates :title, length: { in: 0..255 }
   # validate :description_is_not_first_line
 # create call back to prevent this situation from occuring
   
@@ -37,9 +38,15 @@ class Book < ActiveRecord::Base
     while i < line_count
       path = `awk 'NR==#{i}  {print; exit}' public/gutenberg/epub_list.txt`
       path = path.chomp
-      self.build_book_from_epub(path)
+      if self.no_book_has_path?(path)
+        self.build_book_from_epub(path)
+      end
       i = i + 1
     end
+  end
+
+  def self.no_book_has_path?(path)
+    Book.find_by_source(path).nil?
   end
 
   def self.build_book_from_epub(file_path)
@@ -135,13 +142,64 @@ class Book < ActiveRecord::Base
     book = self.new(title: reader.title, synopsis: google_data[0], image_url: google_data[1], source: reader.file )
     book.save
     book = self.create_dependent_models(book, reader, google_data)
-    if book.save 
+    if book.save && book.still_valid?
       book
     else
       book.destroy
     end
   end
 
+  def still_valid?
+    not_webster? && not_tredition? && not_millions? && not_pre_1923? && not_world_first? && long_enough?
+  end
+
+  def not_pre_1923?
+    if self.synopsis.include?("This is a pre-1923 historical reproduction that was curated for quality. ")
+      false
+    else
+      true
+    end
+  end
+
+  def not_tredition?
+    if self.synopsis.include?("This book is part of the TREDITION CLASSICS. It contains classical literature works from over two thousand years.")
+      false
+    else
+      true
+    end
+  end
+
+  def not_webster?
+    if self.synopsis.include?("Webster's edition of this classic is organized to expose the reader to a maximum number of difficult and potentially ambiguous English words.")
+      false
+    else
+      true
+    end
+  end
+
+  def long_enough?
+    if self.synopsis.length <= 200
+      false
+    else
+      true
+    end
+  end
+
+  def not_world_first?
+    if self.synopsis.include?("Visit us online at www.1stWorldLibrary.ORG")
+      false
+    else
+      true
+    end
+  end
+
+  def not_millions?
+    if self.synopsis.include?("Purchase of this book includes free trial access to www.million-books.com where you can read more than a million books for free. This is an OCR edition with typos.")
+      false
+    else
+      true
+    end
+  end
 
   def self.create_dependent_models(book, reader, google_data)
     authors = reader.authors.map { |author| book.authors.build(name: author) }

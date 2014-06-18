@@ -19,10 +19,14 @@
             .row
               - if current_user.host?(game) == true
                 .small-12.columns
-                  = display_game_info(current_user, game)
-                .row.text-right
-                  .small-12.columns
-                    %p cancel inviations
+                  = link_to determine_game_url(game, current_user), class: "expand button split disabled" do
+                    = list_opponent_usernames(game, current_user)
+                    %span{"data-dropdown" => "drop"}
+                  %ul#drop.f-dropdown{"data-dropdown-content" => ""}
+                    %li
+                      = link_to "#", "This is a link"
+                    %li Test 
+                    %li more tests  
         - if @current_games
           - @current_games.each do |game|
             - if current_user.host?(game) == false
@@ -49,6 +53,5 @@
                   = submit_tag "Reject", class: "button small"
 - javascript_include_tag('options_display.js')
 / .usernames{username: @usernames, followers: @followers}
-
 
  
