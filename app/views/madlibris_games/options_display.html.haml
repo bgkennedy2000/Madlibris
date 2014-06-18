@@ -23,10 +23,14 @@
                     = list_opponent_usernames(game, current_user)
                     %span{"data-dropdown" => "drop"}
                   %ul#drop.f-dropdown{"data-dropdown-content" => ""}
-                    %li
-                      = link_to "#", "This is a link"
-                    %li Test 
-                    %li more tests  
+                    - opponents_array(game, current_user).each do |opponent|
+                      %li
+                        .small-6.columns
+                          %p.opponent
+                            = opponent
+                        .small-6.columns.text-right 
+                          %p.uninvite x
+                          
         - if @current_games
           - @current_games.each do |game|
             - if current_user.host?(game) == false

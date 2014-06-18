@@ -14,6 +14,10 @@ module MadlibrisGamesHelper
     opponents = user_names.join(", ")
   end
 
+  def opponents_array(game, user)
+    user_names = game.games_users.collect { |gu| gu.user.username if gu.user.username != user.username }.compact
+  end
+
   def determine_game_url(game, user)
     if game.needs_to_choose_book?(user)
       madlibris_game_path(game.id)
