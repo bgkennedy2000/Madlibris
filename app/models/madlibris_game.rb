@@ -92,8 +92,12 @@ class MadlibrisGame < Game
     end
   end
 
+  def accepted_games_users
+    games_users.select { |games_user| games_user.try(:accepted?) }
+  end
+
   def enough_players?
-    players = games_users.select { |games_user| games_user.try(:accepted?) }
+    players = accepted_games_users
     if players
       players.length >= 3
     else

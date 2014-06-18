@@ -10,12 +10,14 @@ module MadlibrisGamesHelper
   end
 
   def list_opponent_usernames(game, user)
-    user_names = game.games_users.collect { |gu| gu.user.username if gu.user.username != user.username }.compact
-    opponents = user_names.join(", ")
+    games_users = (game.outstanding_invites << game.accepted_games_users).flatten
+    user_names = games_users.collect { |gu| gu.user.username if gu.user.username != user.username }.compact
+    opponents = user_names.join(" ")
   end
 
   def opponents_array(game, user)
-    user_names = game.games_users.collect { |gu| gu.user.username if gu.user.username != user.username }.compact
+    games_users = (game.outstanding_invites << game.accepted_games_users).flatten
+    user_names = games_users.collect { |gu| gu.user.username if gu.user.username != user.username }.compact
   end
 
   def determine_game_url(game, user)

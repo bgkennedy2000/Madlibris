@@ -15,6 +15,7 @@ Madlibris::Application.routes.draw do
   post 'write_first_line', to: 'madlibris_games#write_line', as: "write_line"
   get 'new_line_choice/:id', to: 'madlibris_games#new_line_choice', as: "new_line_choice"
   post 'make_line_choice', to: 'madlibris_games#choose_line', as: "choose_line"
+  post 'send_invite', to: 'madlibris_games#send_invite', as: "send_invite"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

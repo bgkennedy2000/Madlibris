@@ -86,7 +86,22 @@ class MadlibrisGamesController < ApplicationController
     @result = @user.uninvite_from_game(@uninvited_user, @game)
 
     respond_to do |format|
-      format.json { render :json => [@user.to_json, @uninvited_user.to_json, @game.to_json, @result ]}
+      format.json { render :json => { user: @uninvited_user.username, game: @game.id, result: @result } }
     end
   end
+
+  def send_invite
+    @user = current_user
+    if @invited_user = User.find_by_username(params[:username])
+      @game = MadlibrisGame.find(params[:game_id])
+      @game = @user.invite_existing_user(@invited_user, @game)[0]
+      @result = true
+    else
+      @result = false
+    end
+    respond_to do |format|
+      format.json { render :json => { game: @game.id, username: @invited_user.username, result: @result } }
+    end
+  end
+
 end
