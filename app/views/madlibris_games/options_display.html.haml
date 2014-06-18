@@ -17,7 +17,7 @@
         - if @current_games
           - @current_games.each do |game|
             .row
-              - if current_user.host?(game) == true
+              - if current_user.host?(game) == true && game.book_choice_made? == false
                 .small-12.columns
                   = link_to determine_game_url(game, current_user), class: "expand button #{link_class(current_user, game)}", id: "game#{game.id}" do
                     = list_opponent_usernames(game, current_user)
@@ -34,10 +34,23 @@
                       %a{href: "", id: "additional_player"} add another player
         - if @current_games
           - @current_games.each do |game|
-            - if current_user.host?(game) == false
+            - if current_user.host?(game) == false && game.book_choice_made? == false
               .row   
                 .small-12.columns
-                  = display_game_info(current_user, game)            
+                  = display_game_info(current_user, game) 
+            
+            - if game.book_choice_made?
+              .row
+                .small-12.columns
+                  = link_to determine_game_url(game, current_user), class: "expand button #{link_class(current_user, game)}", id: "game#{game.id}" do
+                    = list_opponent_usernames(game, current_user)
+                    %span{"data-dropdown" => "drop"}
+                  %ul#drop.f-dropdown{"data-dropdown-content" => "", "data-game_id" => game.id}
+                    - game.formatted_score.each do |gu_id, score_array| 
+                      %li
+                        %a 
+                          = "#{score_array[0]}: #{score_array[1]}"
+
     %dd
       = link_to "Game Invitations", '#pending_invites'
       #pending_invites.content{data_invites: @pending_invites.length}

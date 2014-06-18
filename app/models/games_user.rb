@@ -83,6 +83,10 @@ class GamesUser < ActiveRecord::Base
     line_choices.select { |lc| lc.round_id == round.id }.try(:first)
   end
 
+  def self.username(gu_id)
+    GamesUser.find(gu_id).user.username
+  end
+
   def get_line_choice(round)
     line_choices.select { |lc| lc.round_id == round.id }.try(:first)
 

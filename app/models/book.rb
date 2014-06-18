@@ -159,7 +159,7 @@ class Book < ActiveRecord::Base
   end
 
   def not_pre_1923?
-    if self.synopsis.include?("This is a pre-1923 historical reproduction that was curated for quality. ")
+    if self.synopsis.include?("This is a pre-1923 historical reproduction")
       false
     else
       true
@@ -167,7 +167,7 @@ class Book < ActiveRecord::Base
   end
 
   def not_tredition?
-    if self.synopsis.include?("This book is part of the TREDITION CLASSICS. It contains classical literature works from over two thousand years.")
+    if self.synopsis.include?("TREDITION CLASSICS")
       false
     else
       true
@@ -175,7 +175,7 @@ class Book < ActiveRecord::Base
   end
 
   def not_webster?
-    if self.synopsis.include?("Webster's edition of this classic is organized to expose the reader to a maximum number of difficult and potentially ambiguous English words.")
+    if self.synopsis.include?("Webster's edition of this classic.")
       false
     else
       true
@@ -199,7 +199,7 @@ class Book < ActiveRecord::Base
   end
 
   def not_millions?
-    if self.synopsis.include?("Purchase of this book includes free trial access to www.million-books.com where you can read more than a million books for free. This is an OCR edition with typos.")
+    if self.synopsis.include?("www.million-books.com.")
       false
     else
       true

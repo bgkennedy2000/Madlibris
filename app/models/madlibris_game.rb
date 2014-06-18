@@ -135,6 +135,14 @@ class MadlibrisGame < Game
     game_score_hash
   end
 
+  def formatted_score
+    formatted_hash = { }
+    current_score.each { |gu_id, points|
+      formatted_hash[gu_id] = [GamesUser.username(gu_id), points ]
+    }
+    formatted_hash
+  end
+
   def add_round_to_current_score(round_hash, current_score_hash)
     game_user_ids = round_hash.keys.sort
     raise "error compiling score" unless game_user_ids == current_score_hash.keys.sort
@@ -155,6 +163,14 @@ class MadlibrisGame < Game
 
   def completed_rounds
     rounds.select { |round| round.completed?}
+  end
+
+  def book_choice_made?
+    if rounds.first
+      rounds.first.book_choice.completed?
+    else
+      false
+    end
   end
 
 

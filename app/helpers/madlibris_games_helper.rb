@@ -56,7 +56,7 @@ module MadlibrisGamesHelper
     classes = [ ]
     if list_opponent_usernames(game, user) == ""
     end
-    if game.game_host.id == user.id && game.proposing?
+    if (game.game_host.id == user.id && game.proposing?) || game.playing?
       classes << "split" 
     end
     classes << "disable" unless activate_button?(game, user)
