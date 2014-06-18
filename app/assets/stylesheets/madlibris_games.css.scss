@@ -4,14 +4,17 @@
 
 
 p.opponent {
-  margin-left: 19%;
-  margin-top: 1%;
-  margin-bottom: 1%;
+
+  padding-left: 0px;
+  color: #555555;
+  line-height: inherit;
+  font-size: 0.875rem;
 }
 p.uninvite{
-  margin-right: 30%;
-  margin-top: 1%;
-  margin-bottom: 1%;
+  color: #555555;
+  line-height: inherit;
+  font-size: 0.875rem;
+  display: inline-block;
 }
 #new_player_username {
   padding: 3px;
