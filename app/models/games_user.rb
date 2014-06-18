@@ -63,6 +63,7 @@ class GamesUser < ActiveRecord::Base
   
     event :kick_out do
       after do
+        self.game.game_active if self.game.may_game_active?
         self.save
       end
       transitions from: :pending, to: :kicked_out

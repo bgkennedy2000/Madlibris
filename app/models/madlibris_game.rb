@@ -109,13 +109,7 @@ class MadlibrisGame < Game
     rounds.sort_by { |r| r.created_at }.last
   end
 
-  def no_outstanding_invites?
-    games_users.select { |games_user| games_user.try(:pending?) } == [ ]
-  end
 
-  def outstanding_invites
-    games_users.select { |games_user| games_user.try(:pending?) }
-  end
 
   def no_invites_to_send?
     games_users.select { |games_user| games_user.try(:to_do?) } == [ ]

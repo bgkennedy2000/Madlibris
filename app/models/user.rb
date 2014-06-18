@@ -139,14 +139,16 @@ class User < ActiveRecord::Base
   def reject_invitation(game)
     games_user = get_pending_games_user(game)
     games_user.try(:reject)
+    game.game_active if game.may_game_active?
     games_user
   end
 
   def uninvite_from_game(user, game)
     games_user = user.get_pending_games_user(game) 
     games_user ||= user.get_accepted_games_user(game)
-    if host?(game) && games_user.may_kick_out?
+    if host?(game) && games_user.may_kick_out? && game.proposing?
       games_user.kick_out
+      game.game_active if game.may_game_active?
       true
     else
       false
@@ -223,5 +225,14 @@ class User < ActiveRecord::Base
     end   
   end
 
+  def first_line_written?(game)
+    first_line = get_first_line(game.latest_round)
+    first_line.written?
+  end
+
+  def line_choosing?(game)
+    line_choice = get_line_choice(game.latest_round)
+    line_choice.completed?
+  end
 
 end

@@ -61,7 +61,7 @@ class Round < ActiveRecord::Base
 
   def all_first_lines_written?
     all_complete_first_lines = all_first_lines.select{|line| line.written?}
-    all_complete_first_lines.count == games_users.count
+    all_complete_first_lines.count == games_users.select{ |gu| gu.accepted? }.count
   end
 
   def all_first_lines
@@ -80,7 +80,7 @@ class Round < ActiveRecord::Base
 
   def get_line_choosers_games_users
     users = line_choosers
-    users.collect { |user| user.get_accepted_games_user(game)}
+    users.collect { |user| user.get_accepted_games_user(game) }.compact
   end
 
   def determine_book_chooser
@@ -95,7 +95,7 @@ class Round < ActiveRecord::Base
   end
 
   def create_first_line_and_associate_to_round(games_user, book)
-    line = FirstLine.create(book_id: book.id, true_line: false, user_id: games_user.user_id, introductory_content_id: book.introductory_content.id, games_user_id: games_user.id)
+    line = FirstLine.create(book_id: book.id, true_line: false, user_id: games_user.user.try(:id), introductory_content_id: book.introductory_content.id, games_user_id: games_user.id)
     first_lines_rounds.create(first_line_id: line.id)
   end
 
@@ -107,7 +107,8 @@ class Round < ActiveRecord::Base
 
   def build_line_choices
     book_chooser = get_games_user_that_made_book_choice
-    games_users.each {
+    choosing_games_users = games_users.select{ |gu| gu.accepted? }
+    choosing_games_users.each {
       |games_user|
       unless games_user.id == book_chooser.id
         create_line_choice_and_associate_to_round(games_user)
@@ -125,6 +126,7 @@ class Round < ActiveRecord::Base
 
   def line_choosers
     games_users_array = games_users.select { |gu| gu.user.id != book_chooser.id }
+    games_users_array = games_users_array.select { |gu| gu.accepted? }
     games_users_array.collect{ |gu| gu.user }
   end
 

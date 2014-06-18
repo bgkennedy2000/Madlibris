@@ -19,7 +19,7 @@
             .row
               - if current_user.host?(game) == true
                 .small-12.columns
-                  = link_to determine_game_url(game, current_user), class: "expand button split disabled", id: "game#{game.id}" do
+                  = link_to determine_game_url(game, current_user), class: "expand button #{link_class(current_user, game)}", id: "game#{game.id}" do
                     = list_opponent_usernames(game, current_user)
                     %span{"data-dropdown" => "drop"}
                   %ul#drop.f-dropdown{"data-dropdown-content" => "", "data-game_id" => game.id}

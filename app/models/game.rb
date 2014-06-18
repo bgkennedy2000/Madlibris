@@ -21,7 +21,7 @@ class Game < ActiveRecord::Base
         build_round_models
         self.save
       end
-      transitions :from => :proposing, :to => :playing, guard: :all_accepted?
+      transitions :from => :proposing, :to => :playing, guard: :enough_players_no_pending?
     end
 
     event :complete do
@@ -33,11 +33,30 @@ class Game < ActiveRecord::Base
 
   end
 
+  def enough_players_no_pending?
+    enough_players? && no_pending?
+  end
+
+  def enough_players?
+    games_users.select { |gu| gu.accepted? }.length >= 3
+  end
+
   def all_accepted? 
     truth_array = games_users.collect { |gu| gu.accepted? }
     !truth_array.include?(false)
   end
 
+  def no_pending?
+    outstanding_invites.length == 0
+  end
+
+  def outstanding_invites
+    games_users.select { |games_user| games_user.try(:pending?) }
+  end
+
+  def no_outstanding_invites?
+    games_users.select { |games_user| games_user.try(:pending?) } == [ ]
+  end
 
 # needs to accomodate game creation process, right now blows it up due to game state
   def has_one_player?
