@@ -2,7 +2,7 @@ class Game < ActiveRecord::Base
   attr_accessible  :type, :kind, :state
   has_many :games_users, dependent: :destroy
   has_many :users, through: :games_users
-  has_many :rounds
+  has_many :rounds, dependent: :destroy
   # validates :state, inclusion: { in: ["proposed", "ongoing", "completed"]}
   validates :type, inclusion: { in: ["MadlibrisGame"] }
   validates :kind, inclusion: { in: ["single-player", "multi-player"] }

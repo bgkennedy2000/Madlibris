@@ -6,6 +6,7 @@ class Book < ActiveRecord::Base
   validates :title, presence: true
   validates :image_url, presence: true
   validates :source, presence: true
+  validates :source, uniqueness: true
   validates :title, uniqueness: true
   validates :title, length: { in: 0..255 }
   # validate :description_is_not_first_line

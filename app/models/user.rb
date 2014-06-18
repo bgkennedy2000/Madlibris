@@ -7,10 +7,10 @@ class User < ActiveRecord::Base
   # Setup accessible (or protected) attributes for your model
   attr_accessible :email, :username, :password, :password_confirmation, :remember_me, :uid, :provider
   
-  has_many :games_users
+  has_many :games_users, dependent: :destroy
   has_many :games, through: :games_users
   has_many :rounds, through: :games
-  has_many :notifications
+  has_many :notifications, dependent: :destroy
   has_many :first_lines
   has_many :first_lines_rounds
 

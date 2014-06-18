@@ -12,7 +12,7 @@ class EpubReader
     @xhtml_xml_resources = @book.resources.select { |resource| resource.media_type.include?("xhtml+xml") }
     
     # proc items are invoked in the search for the staring point node
-    @search_items = ['CHAPTER', 'BOOK ONE', 'FIRST BOOK']
+    @search_items = ['CHAPTER', 'BOOK ONE', 'FIRST BOOK', "CHAPTER ONE", 'CHAPTER 1', 'CHAPTER I', 'Chapter I', 'Chapter 1']
     @search_for_node = Proc.new { |element, search_term|
       @xml_document.css(element).find { |node| node.text.include?(search_term) }
     }
