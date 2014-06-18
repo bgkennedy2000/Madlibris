@@ -39,6 +39,7 @@ class Book < ActiveRecord::Base
       path = `awk 'NR==#{i}  {print; exit}' public/gutenberg/epub_list.txt`
       path = path.chomp
       if self.no_book_has_path?(path)
+        File.open("public/gutenberg/error_log", "w") { |file| file.write path + " is being put into a Book object next" }
         self.build_book_from_epub(path)
       end
       i = i + 1
@@ -142,9 +143,13 @@ class Book < ActiveRecord::Base
     book = self.new(title: reader.title, synopsis: google_data[0], image_url: google_data[1], source: reader.file )
     book.save
     book = self.create_dependent_models(book, reader, google_data)
-    if book.save && book.still_valid?
-      book
-    else
+    begin
+      if book.save && book.still_valid?
+        book
+      else
+        book.destroy
+      end
+    rescue
       book.destroy
     end
   end

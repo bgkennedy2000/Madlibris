@@ -22,6 +22,19 @@ optionsDisplay.noticeTimeout = function(){
   setTimeout(function(){ $('.alert-box').slideUp() }, 5000);
 }
 
+optionsDisplay.uninvite = function(){
+  $('p.uninvite').on('click', function(ev) {
+    $.ajax({
+      url: '/uninvite',
+      type: 'POST',
+      data: { username: $(this).attr('data-username'), game_id: $(this).attr('data-game_id') },
+      success: function(stuff) {
+        alert(stuff);
+        $(this).parent().parent().slideUp();
+      }
+    });
+  });
+}
 
 
 $(document).ready(function(){
@@ -31,4 +44,5 @@ $(document).ready(function(){
   $('.hide-button').hide();
   optionsDisplay.setupAccordion();
   optionsDisplay.noticeTimeout();
+  optionsDisplay.uninvite();
 });

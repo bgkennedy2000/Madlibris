@@ -78,4 +78,15 @@ class MadlibrisGamesController < ApplicationController
     @user.reject_invitation(@game)
     redirect_to(options_display_path)
   end
+
+  def uninvite
+    @user = current_user
+    @uninvited_user = User.find_by_username(params[:username])
+    @game = MadlibrisGame.find(params[:game_id])
+    @result = @user.uninvite_from_game(@uninvited_user, @game)
+
+    respond_to do |format|
+      format.json { render :json => [@user.to_json, @uninvited_user.to_json, @game.to_json, @result ]}
+    end
+  end
 end

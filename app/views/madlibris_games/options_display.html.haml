@@ -29,8 +29,8 @@
                           %p.opponent
                             = opponent
                         .small-6.columns.text-right 
-                          %p.uninvite x
-                          
+                          %p.uninvite{"data-game_id" => game.id, "data-username" => opponent} x
+                                                    
         - if @current_games
           - @current_games.each do |game|
             - if current_user.host?(game) == false

@@ -147,8 +147,10 @@ class User < ActiveRecord::Base
     games_user ||= user.get_accepted_games_user(game)
     if host?(game) && games_user.may_kick_out?
       games_user.kick_out
+      true
+    else
+      false
     end
-    games_user
   end
 
   def host?(game)
