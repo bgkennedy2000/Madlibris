@@ -11,7 +11,7 @@ class FirstLine < ActiveRecord::Base
 
   validates :true_line, :inclusion => {:in => [true, false]}
   validate :fake_line_has_games_user?
-  validate :fake_line_has_user?
+  # validate :fake_line_has_user?
 
   scope :true_line, -> { where("true_line = ?", true ) } 
 

@@ -1,6 +1,6 @@
 class Book < ActiveRecord::Base
   
-  attr_accessible :image_url, :synopsis, :title, :source
+  attr_accessible :image_url, :synopsis, :title, :source, :pre_first_line_content
 
   validates :synopsis, presence: true
   validates :title, presence: true
