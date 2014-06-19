@@ -14,7 +14,7 @@
     %dd
       = link_to "Current Games", '#current_games'
       #current_games.content.active{data_current_games: @current_games.length}
-        - if @current_games
+        - if @current_games.any?
           - @current_games.each do |game|
             .row
               - if current_user.host?(game) == true && game.book_choice_made? == false
@@ -32,7 +32,7 @@
                           %p.uninvite{"data-game_id" => game.id, "data-username" => opponent} x
                     %li  
                       %a{href: "", id: "additional_player"} add another player
-        - if @current_games
+        - if @current_games.any?
           - @current_games.each do |game|
             - if current_user.host?(game) == false && game.book_choice_made? == false
               .row   
@@ -55,7 +55,7 @@
       = link_to "Game Invitations", '#pending_invites'
       #pending_invites.content{data_invites: @pending_invites.length}
         %p Invitations from: 
-        - if @pending_invites
+        - if @pending_invites.any?
           - @pending_invites.each do |game|
             .row
               .small-3.medium-4.columns
@@ -70,6 +70,5 @@
                   = hidden_field_tag(:game_id, game.id)
                   = submit_tag "Reject", class: "button small"
 - javascript_include_tag('options_display.js')
-/ .usernames{username: @usernames, followers: @followers}
 
  
