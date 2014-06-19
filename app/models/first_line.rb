@@ -31,11 +31,11 @@ class FirstLine < ActiveRecord::Base
 
   end
 
-  def fake_line_has_user?
-    if self.true_line == false
-      errors.add(:base, "Fake lines require a user_id") unless self.user
-    end
-  end
+  # def fake_line_has_user?
+  #   if self.true_line == false
+  #     errors.add(:base, "Fake lines require a user_id") unless self.user
+  #   end
+  # end
 
   def fake_line_has_games_user?
     if self.true_line == false
