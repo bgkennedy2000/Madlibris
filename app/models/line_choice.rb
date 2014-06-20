@@ -50,6 +50,12 @@ class LineChoice < ActiveRecord::Base
     end
   end
 
+  def author_username
+    if first_line.true_line == false
+      first_line.games_user.user.username
+    end
+  end
+
   def has_first_line?
     !!first_line
   end

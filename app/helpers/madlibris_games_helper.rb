@@ -59,7 +59,7 @@ module MadlibrisGamesHelper
     if (game.game_host.id == user.id && game.proposing?) || game.playing?
       classes << "split" 
     end
-    classes << "disable" unless activate_button?(game, user)
+    classes << "disabled" unless activate_button?(game, user)
     classes.join(" ")
   end
 

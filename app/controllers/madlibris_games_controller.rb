@@ -23,7 +23,6 @@ class MadlibrisGamesController < ApplicationController
     @user = current_user
     @game = MadlibrisGame.find(params[:id])
     @books = Book.game_view(@game, @user)
-    # @status = @game.status(@user)
   end
 
   def choose_book
@@ -46,7 +45,12 @@ class MadlibrisGamesController < ApplicationController
     @user = current_user
     @round = Round.find(params[:round_id])
     @text = params[:text]
-    @user.draft_first_line(@round, @text)
+    @first_line = @user.draft_first_line(@round, @text)
+    if @first_line.completed?
+      flash[:notice] = "Line submitted."
+    else
+      flash[:alert] = "uh-oh, something went wrong."
+    end
     redirect_to(options_display_path)
   end
 
@@ -61,21 +65,39 @@ class MadlibrisGamesController < ApplicationController
     @user = current_user
     @round = Round.find(params[:round_id])
     @first_line = FirstLine.find(params[:first_line_id])
-    @user.choose_first_line(@round, @first_line)
+    @line_choice = @user.choose_first_line(@round, @first_line)
+    if @line_choice.selected_true_line?
+      flash[:notice] = "Correct: you get +1 points."
+    elsif @line_choice.selected_true_line? == false
+      flash[:alert] = "#{@line_choice.author_username} wrote that. #{@line_choice.author_username} gets +2 points."
+    else
+
+    end
     redirect_to(options_display_path)
   end
 
   def accept_invite
     @user = current_user
     @game = MadlibrisGame.find(params[:game_id])
-    @user.accept_invitation(@game)
+    @games_user = @user.accept_invitation(@game)
+    if @games_user.accepted?
+      flash[:notice] = "Invitation Accepted"
+    else
+      flash[:alert] = "Uh-oh. Something went wrong."
+    end
     redirect_to(options_display_path)
   end
 
   def reject_invite
     @user = current_user
     @game = MadlibrisGame.find(params[:game_id])
-    @user.reject_invitation(@game)
+    @games_user = @user.reject_invitation(@game)
+    if @games_user.rejected?
+      flash[:alert] = "You declined the invitation."
+    else
+      flash[:alert] = "Uh-oh. Something went wrong."
+    end
+
     redirect_to(options_display_path)
   end
 

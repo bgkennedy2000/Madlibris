@@ -40,8 +40,8 @@ class User < ActiveRecord::Base
     line_choice.first_line_id = first_line.id
     line_choice.complete if line_choice.may_complete?
     round = Round.find(round.id)
-
     round.complete if round.may_complete?
+    line_choice
   end
 
   def get_line_choice(round)
@@ -57,6 +57,7 @@ class User < ActiveRecord::Base
     if round.all_first_lines_written?
       round.all_lines_complete 
     end
+    first_line
   end
 
   def get_first_line(round)

@@ -75,6 +75,7 @@ optionsDisplay.sendInvite = function() {
           $('#game' + stuff.game).html(stuff.username + " " + HTML);
           var $input = $('#new_player_username');
           $input.replaceWith('<div class="small-6 columns"><p class="opponent">' + stuff.username + '</p></div><div class="small-6 columns text-right" data-game_id=' + stuff.game + ' data-username=' + stuff.username + '>x</p>');
+          $('#send_invite').slideUp();
         }
         optionsDisplay.noticeTimeout();
       }
