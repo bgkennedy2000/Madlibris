@@ -7,7 +7,7 @@ class Book < ActiveRecord::Base
   validates :image_url, presence: true
   validates :source, presence: true
   validates :source, uniqueness: true
-  validates :title, uniqueness: true
+  # validates :title, uniqueness: true
   validates :title, length: { in: 0..255 }
   # validate :description_is_not_first_line
 # create call back to prevent this situation from occuring
@@ -30,6 +30,22 @@ class Book < ActiveRecord::Base
       Book.all.sample(10)
     else 
       game.latest_round.try(:book)
+    end
+  end
+
+  def self.build_from_custom(file_path)
+    line_count = `wc -l #{file_path}`.to_i
+    i = 1
+    while i < line_count
+      hash = (`awk 'NR==#{i}  {print; exit}' db/book_seed.rb`).chomp
+      binding.pry
+      path = hash[:source]
+      
+      # if self.no_book_has_path?(path)
+      #   File.open("public/gutenberg/error_log", "w") { |file| file.write path + " is being put into a Book object next" }
+      #   self.build_book_from_epub(path)
+      # end
+      i = i + 1
     end
   end
 

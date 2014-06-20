@@ -8,7 +8,6 @@ gem 'nokogiri'
 gem 'epub-parser'
 gem 'httparty', '0.11.0'
 gem 'epub_validator'
-# gem 'stanford-core-nlp'
 gem 'googlebooks'
 gem 'namae'
 gem 'foundation-rails'
@@ -28,6 +27,7 @@ group :development, :test do
   gem "letter_opener"
   gem 'rspec-rails', '2.14.1'
   gem 'factory_girl_rails'
+  gem 'stanford-core-nlp'
 end
 
 group :test do
