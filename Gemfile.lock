@@ -189,6 +189,7 @@ GEM
       rack
     rack-test (0.6.2)
       rack (>= 1.0)
+    railroady (1.1.1)
     rails (3.2.18)
       actionmailer (= 3.2.18)
       actionpack (= 3.2.18)
@@ -304,6 +305,7 @@ DEPENDENCIES
   pg
   pry-rails
   pry-stack_explorer
+  railroady
   rails (= 3.2.18)
   rspec-rails (= 2.14.1)
   sass-rails (~> 3.2.3)
