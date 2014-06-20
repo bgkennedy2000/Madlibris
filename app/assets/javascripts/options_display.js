@@ -75,9 +75,9 @@ optionsDisplay.sendInvite = function() {
           $('#game' + stuff.game).html(stuff.username + " " + HTML);
           var $input = $('#new_player_username');
           $input.replaceWith('<div class="small-6 columns"><p class="opponent">' + stuff.username + '</p></div><div class="small-6 columns text-right" data-game_id=' + stuff.game + ' data-username=' + stuff.username + '><p class="uninvite" data-game_id="' + stuff.game + '" data-username="' + stuff.username + '" >x</p>');
-          $
-          // var newLi = $('<li class="drop' + stuff.game + '"><div class="small-6 columns"><p class="opponent">' + stuff.username + '</p></div><div class="small-6 columns text-right"><p class="uninvite" data-game_id="' + stuff.game + '" data-username="' + stuff.username + '" >x</p>'); 
-          // $('#drop' + stuff.game).children('li:last-child').prepend(newLi);
+          $('#send_invite').slideUp();
+          var newLi = $('<li><a href="" id= "additional_player>add another player</a></li>');
+          $('#drop' + stuff.game).children('li:last-child').prepend(newLi);
         }
         optionsDisplay.noticeTimeout();
         optionsDisplay.uninvite();
