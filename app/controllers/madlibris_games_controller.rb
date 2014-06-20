@@ -46,7 +46,7 @@ class MadlibrisGamesController < ApplicationController
     @round = Round.find(params[:round_id])
     @text = params[:text]
     @first_line = @user.draft_first_line(@round, @text)
-    if @first_line.completed?
+    if @first_line.written?
       flash[:notice] = "Line submitted."
     else
       flash[:alert] = "uh-oh, something went wrong."
