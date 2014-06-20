@@ -24,7 +24,7 @@
                     %span{"data-dropdown" => "drop#{game.id}"}
                   %ul.f-dropdown{id: "drop#{game.id}", "data-dropdown-content" => "", "data-game_id" => game.id}
                     - opponents_array(game, current_user).each do |opponent|
-                      %li
+                      %li{class: "drop#{game.id}"}
                         .small-6.columns
                           %p.opponent
                             = opponent
