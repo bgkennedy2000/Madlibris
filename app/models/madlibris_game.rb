@@ -154,7 +154,7 @@ class MadlibrisGame < Game
 
   def zero_points_hash
     hash = { }
-    games_users.each {
+    games_users.accepteds.each {
         |gu|
         hash[gu.id] = 0
     }

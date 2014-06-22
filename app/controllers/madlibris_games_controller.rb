@@ -23,6 +23,7 @@ class MadlibrisGamesController < ApplicationController
     @user = current_user
     @game = MadlibrisGame.find(params[:id])
     @books = Book.game_view(@game, @user)
+    render :show, :layout => "game_layout"
   end
 
   def choose_book
@@ -38,7 +39,7 @@ class MadlibrisGamesController < ApplicationController
     @user = current_user
     @game = MadlibrisGame.find(params[:id])
     @books = Book.game_view(@game, @user)
-    render action: "new_line"
+    render :new_line, :layout => "game_layout"
   end
 
   def write_line

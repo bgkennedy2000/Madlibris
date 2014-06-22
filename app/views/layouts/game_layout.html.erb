@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Madlibris</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+    <% if notice %>
+      <div class="alert-box success text-center"><%= notice %>
+      <a href="#" class="close">&times;</a></div>
+    <% end %>
+    <% if alert %>
+      <div class="alert-box warning text-center"><%= alert %>
+      <a href="#" class="close">&times;</a></div>
+    <% end %>
+
+<div class="off-canvas-wrap" data-offcanvas>
+  <div class='inner-wrap'>
+    <div class="fixed">
+      <nav class='tab-bar'>
+        <section class="middle tab-bar-section small-text-right medium-text-center">
+          <h1 class="show-for-medium-up title">Madlibris</h1>
+        </section>
+          <ul class="title-area">
+            <% @game.formatted_score.each do |gu_id, score_array| %>
+              <li class="score"> 
+                  <h2 class="score show-for-medium-up"><%= "#{score_array[0]}: #{score_array[1]}" %></h2>
+                  <h6 class="score show-for-small-only"><%= "#{score_array[0]}: #{score_array[1]}" %></h6>
+              </li>
+            <% end %>
+          </ul>
+        <section class="right-small">
+          <a class="right-off-canvas-toggle menu-icon" href="#"><span></span></a>
+        </section>
+      </nav>
+    </div>
+
+
+      <!-- off canvas menu -->
+      <aside class='right-off-canvas-menu'>
+                <% if current_user %>
+                  <ul class='off-canvas-list'>
+                    <li><label><%= current_user.username %></label></li>
+                    <li><%= link_to "Update Account", edit_user_registration_path %></li>
+                    <li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
+                  </ul>
+                <% end %>
+      </aside>
+      <a class='exit-off-canvas'></a>
+
+
+<%= yield %>
+    </div>
+  </div>
+</body>
+</html>

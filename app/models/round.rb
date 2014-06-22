@@ -135,7 +135,7 @@ class Round < ActiveRecord::Base
       { }
     else
       score_hash = { }
-      games_users.each {
+      games_users.accepteds.each {
         |gu|
         score_hash[gu.id] = 0
       }
